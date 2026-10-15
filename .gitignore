@@ -1,0 +1,10 @@
+# compiled programs - these are rebuilt from source, no need to store them
+*.exe
+*.o
+*.out
+
+# data files written by the program while it runs
+users.txt
+
+# editor settings
+.vscode/
