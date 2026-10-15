@@ -250,9 +250,9 @@ void addFoodMenu(struct ActiveFoodList *list, int currentHour) {
     char id[20], name[40], donorId[20];
     int type, qty, ago, life, zone, flag;
     cout << "\n  --- ADD FOOD DONATION ---" << endl;
-    cout << "  Food ID  : ";  cin >> id;
+    cout << "  Food ID  : ";  cin >> setw(20) >> id;
     if (findFood(list, id) != NULL) { cout << "  ID already used." << endl;  return; }
-    cout << "  Donor ID : ";  cin >> donorId;
+    cout << "  Donor ID : ";  cin >> setw(20) >> donorId;
     cin.ignore();
     cout << "  Food name : ";                      cin.getline(name, 40);
     cout << "  Type (1=Cooked 2=Packaged) : ";     cin >> type;
@@ -260,6 +260,13 @@ void addFoodMenu(struct ActiveFoodList *list, int currentHour) {
     cout << "  Prepared how many hours ago : ";    cin >> ago;
     cout << "  Shelf life (hours) : ";             cin >> life;
     cout << "  Zone (0-5) : ";                     cin >> zone;
+    // shelf life must be above zero, otherwise the tier percentage
+    // divides by zero and expired food can be reported as safe
+    if (type < 1 || type > 2 || qty <= 0 || ago < 0 || life <= 0 ||
+        zone < 0 || zone >= 6) {
+        cout << "  Wrong value entered, food not added." << endl;
+        return;
+    }
     if (type == 1) {
         cout << "  Kept covered (1=yes 0=no) : ";  cin >> flag;
         addFood(list, new CookedFood(id, name, donorId, qty,
@@ -277,7 +284,7 @@ void checkFoodMenu(struct ActiveFoodList *list, int currentHour) {
     char id[20];
     int travel;
     cout << "\n  --- CHECK ONE FOOD ITEM ---" << endl;
-    cout << "  Food ID : ";  cin >> id;
+    cout << "  Food ID : ";  cin >> setw(20) >> id;
     struct FoodNode *p = findFood(list, id);
     if (p == NULL) { cout << "  Food not found." << endl;  return; }
     cout << "  Travel hours to NGO : ";  cin >> travel;

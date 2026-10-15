@@ -211,7 +211,8 @@ public:
     struct MatchList* getMatches() { return &matches; }
     int getQueueCount() { return queue.count; }
     int getMatchCount() { return matches.size; }
-    void addRequest(Request *r) { enqueue(&queue, r); }
+    // returns 0 if the queue was full, so the caller can clean up
+    int addRequest(Request *r) { return enqueue(&queue, r); }
     // build one pair and put it in the sorted list
     void addCandidate(const char *foodId, Request *r, int distance,
                       int mealsGiven, int currentHour) {
@@ -242,13 +243,20 @@ void addRequestMenu(MatchingEngine *engine, int currentHour) {
     char reqId[20], ngoId[20];
     int meals, urgency, zone;
     cout << "\n  --- RAISE NGO REQUEST ---" << endl;
-    cout << "  Request ID : ";      cin >> reqId;
-    cout << "  NGO ID     : ";      cin >> ngoId;
+    cout << "  Request ID : ";      cin >> setw(20) >> reqId;
+    cout << "  NGO ID     : ";      cin >> setw(20) >> ngoId;
     cout << "  Meals needed   : ";  cin >> meals;
     cout << "  Urgency (1-10) : ";  cin >> urgency;
     cout << "  Zone (0-5)     : ";  cin >> zone;
-    engine->addRequest(new Request(reqId, ngoId, meals, urgency, currentHour, zone));
-    cout << "\n  Request added to the queue." << endl;
+    if (meals <= 0 || urgency < 1 || urgency > 10 || zone < 0 || zone >= TOTAL_ZONES) {
+        cout << "  Wrong value entered, request not added." << endl;
+        return;
+    }
+    Request *r = new Request(reqId, ngoId, meals, urgency, currentHour, zone);
+    if (engine->addRequest(r) == 1)
+        cout << "\n  Request added to the queue." << endl;
+    else
+        delete r;                   // queue was full, do not leak it
 }
 
 // serve the front request in fifo order

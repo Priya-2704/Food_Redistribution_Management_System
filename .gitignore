@@ -8,3 +8,6 @@ users.txt
 
 # editor settings
 .vscode/
+
+# report documents - these stay out of the repository
+*.docx

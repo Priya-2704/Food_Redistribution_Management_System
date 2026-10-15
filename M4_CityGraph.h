@@ -56,7 +56,9 @@ char* getZoneName(struct CityGraph *g, int zone) { return g->zoneName[zone]; }
 int getTravelTime(struct CityGraph *g, int from, int to) {
     int km = getDistance(g, from, to);
     if (km <= 0) return 0;
-    int hours = km / VAN_SPEED;
+    // round up, so a 14 km trip counts as 4 hours and not 3.
+    // under-estimating travel would let food be sent that spoils on the way.
+    int hours = (km + VAN_SPEED - 1) / VAN_SPEED;
     if (hours < 1) hours = 1;       // any trip takes at least one hour
     return hours;
 }

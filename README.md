@@ -90,8 +90,8 @@ Member 1  owns the donors and NGOs being matched
 Sample output:
 
 ```
-skipped F201 -> N502 (only -1.0 hrs usable after 3 hr trip)
-10 pairs accepted, 5 rejected by shelf life.
+skipped F201 -> N502 (only -2.0 hrs usable after 4 hr trip)
+9 pairs accepted, 6 rejected by shelf life.
 
 1.  F201 -> N503 | 50 meals | 0 km | P = 73.0
 2.  F204 -> N503 | 30 meals | 0 km | P = 73.0

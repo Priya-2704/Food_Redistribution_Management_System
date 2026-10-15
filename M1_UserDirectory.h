@@ -228,7 +228,7 @@ void registerDonor(struct UserDirectory *dir) {
     int zone, type, pledged, fulfilled;
     float quality;
     cout << "\n  --- REGISTER DONOR ---" << endl;
-    cout << "  Donor ID : ";   cin >> id;
+    cout << "  Donor ID : ";   cin >> setw(20) >> id;
     if (searchUser(dir, id) != NULL) { cout << "  ID already used." << endl;  return; }
     cin.ignore();
     cout << "  Name     : ";                         cin.getline(name, 50);
@@ -237,6 +237,11 @@ void registerDonor(struct UserDirectory *dir) {
     cout << "  Total pledges     : ";                cin >> pledged;
     cout << "  Pledges fulfilled : ";                cin >> fulfilled;
     cout << "  Avg quality (0-100) : ";              cin >> quality;
+    if (zone < 0 || zone >= TOTAL_ZONES || type < 1 || type > 3 || pledged < 0 ||
+        fulfilled < 0 || fulfilled > pledged || quality < 0 || quality > 100) {
+        cout << "  Wrong value entered, donor not added." << endl;
+        return;
+    }
     Donor *d = new Donor(id, name, zone, type, pledged, fulfilled, quality);
     insertUser(dir, id, d);
     cout << "\n  Donor registered." << endl;
@@ -248,13 +253,17 @@ void registerRecipient(struct UserDirectory *dir) {
     char id[20], name[50];
     int zone, capacity, urgency;
     cout << "\n  --- REGISTER NGO / SHELTER ---" << endl;
-    cout << "  Recipient ID : ";  cin >> id;
+    cout << "  Recipient ID : ";  cin >> setw(20) >> id;
     if (searchUser(dir, id) != NULL) { cout << "  ID already used." << endl;  return; }
     cin.ignore();
     cout << "  Name       : ";        cin.getline(name, 50);
     cout << "  Zone (0-5) : ";        cin >> zone;
     cout << "  Capacity (meals) : ";  cin >> capacity;
     cout << "  Urgency (1-10)   : ";  cin >> urgency;
+    if (zone < 0 || zone >= TOTAL_ZONES || capacity <= 0 || urgency < 1 || urgency > 10) {
+        cout << "  Wrong value entered, recipient not added." << endl;
+        return;
+    }
     insertUser(dir, id, new Recipient(id, name, zone, capacity, urgency));
     cout << "\n  Recipient registered." << endl;
 }
@@ -263,7 +272,7 @@ void registerRecipient(struct UserDirectory *dir) {
 void findUserMenu(struct UserDirectory *dir) {
     char id[20];
     cout << "\n  --- SEARCH USER ---" << endl;
-    cout << "  Enter ID : ";  cin >> id;
+    cout << "  Enter ID : ";  cin >> setw(20) >> id;
     cout << "  Bucket number = " << hashFunction(id) << endl;
     User *u = searchUser(dir, id);
     if (u == NULL) cout << "  User not found." << endl;
@@ -274,7 +283,7 @@ void findUserMenu(struct UserDirectory *dir) {
 void trustRatingMenu(struct UserDirectory *dir) {
     char id[20];
     cout << "\n  --- DONOR TRUST RATING ---" << endl;
-    cout << "  Enter donor ID : ";  cin >> id;
+    cout << "  Enter donor ID : ";  cin >> setw(20) >> id;
     User *u = searchUser(dir, id);
     if (u == NULL || u->getTag() != 'D') { cout << "  No such donor." << endl;  return; }
     Donor *d = (Donor *) u;

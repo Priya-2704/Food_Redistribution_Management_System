@@ -12,6 +12,7 @@ using namespace std;
 int readChoice() {
     int choice;
     cin >> choice;
+    if (cin.eof()) return 0;        // no input left, close the program
     if (cin.fail()) {
         cin.clear();                // remove the error flag
         cin.ignore(100, '\n');      // throw away the bad letters
