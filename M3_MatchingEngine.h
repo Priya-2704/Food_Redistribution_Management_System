@@ -10,7 +10,7 @@
 #include <cstring>
 #include <cstdlib>
 using namespace std;
-#define MAX_REQUESTS 5      // small so the wrap around can be seen
+#define MAX_REQUESTS 5
 #define MAX_MATCHES 50
 #ifndef TOTAL_ZONES
 #define TOTAL_ZONES 6
@@ -81,7 +81,7 @@ public:
     char* getFoodId() { return foodId; }
     char* getNgoId() { return ngoId; }
     float getPriority() { return priority; }
-    // OPERATOR OVERLOADING so we can compare two objects directly
+    // compare two pairs by their priority score
     int operator > (MatchPair &other) { return (priority > other.priority) ? 1 : 0; }
     int operator < (MatchPair &other) { return (priority < other.priority) ? 1 : 0; }
     void display() {
@@ -181,7 +181,7 @@ void freeMatchList(struct MatchList *l) {
     l->size = 0;
 }
 
-// show the array as it is stored, it is always sorted
+// print the priority list
 void displayMatchList(struct MatchList *l) {
     cout << "\n  ---- PRIORITY LIST (" << l->size << " pairs) ----" << endl;
     if (l->size == 0) { cout << "  list is empty" << endl;  return; }
@@ -262,8 +262,7 @@ void serveNextMenu(MatchingEngine *engine, int currentHour) {
 }
 
 // ================= STANDALONE DEMO =================
-// this distance table is only for testing this file alone,
-// in the full project the numbers come from Member 4's city graph
+// distance table used only when this file is run on its own
 
 int demoDist[6][6] = {
     {  0,  4,  7, 10,  6, 12 },

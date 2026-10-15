@@ -52,7 +52,7 @@ int getDistance(struct CityGraph *g, int from, int to) {
 
 char* getZoneName(struct CityGraph *g, int zone) { return g->zoneName[zone]; }
 
-// change km into hours for Member 2's shelf life check
+// change km into travel hours
 int getTravelTime(struct CityGraph *g, int from, int to) {
     int km = getDistance(g, from, to);
     if (km <= 0) return 0;
@@ -178,7 +178,7 @@ void displayRoute(struct CityGraph *g, struct Route *r) {
 
 // ================= PART B : C++ OOP PART =================
 
-// Feature F8 : fake clock so we can jump time and watch food spoil
+// Feature F8 : simulated clock that can be moved forward
 class SimulatedClock {
 private:
     int day;

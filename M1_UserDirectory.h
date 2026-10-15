@@ -30,7 +30,7 @@ public:
     char* getName() { return name; }
     int getZone() { return zone; }
     virtual void display() { cout << "  [USER] " << id << " | " << name << endl; }
-    // tells donor or recipient while saving in file
+    // 'D' for donor, 'R' for ngo
     virtual char getTag() { return 'U'; }
 };
 
