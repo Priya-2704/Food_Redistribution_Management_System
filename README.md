@@ -4,8 +4,6 @@ A C++ console application that matches surplus food donors (restaurants, hostel
 messes, caterers) with recipients (NGOs, shelters, orphanages), so edible food
 reaches people instead of being thrown away.
 
-**Phase 2 submission — 50% build.**
-
 Graphic Era Hill University · Data Structures in C + Object Oriented Programming with C++
 
 ---
@@ -104,7 +102,7 @@ and **ranked first** for another (same zone, 0 km).
 
 ---
 
-## Planned for Phase 3
+## Future work
 
 | Feature | Description |
 |---|---|
