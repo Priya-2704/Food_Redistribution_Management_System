@@ -16,13 +16,15 @@ using namespace std;
 // ================= PART B : C++ OOP PART =================
 
 // base class
-class User {
+class User
+{
 protected:
     char id[20];
     char name[50];
     int zone;
 public:
-    User(const char *uid, const char *uname, int z) {
+    User(const char *uid, const char *uname, int z)
+    {
         strcpy(id, uid);  strcpy(name, uname);  zone = z;
     }
     virtual ~User() { }
@@ -35,7 +37,8 @@ public:
 };
 
 // trust history of one donor
-class DonorTrustProfile {
+class DonorTrustProfile
+{
 private:
     int pledged;
     int fulfilled;
@@ -47,7 +50,8 @@ public:
     int getFulfilled() { return fulfilled; }
     float getQuality() { return quality; }
     // fulfilment percentage
-    float getF() {
+    float getF()
+    {
         if (pledged == 0) return 50;
         return (fulfilled * 100.0) / pledged;
     }
@@ -55,13 +59,15 @@ public:
     float getScore() { return 0.6 * getF() + 0.4 * quality; }
     int isApproved() { return (getScore() >= 75) ? 1 : 0; }
     // update after one more donation
-    void addPledge(int done, float q) {
+    void addPledge(int done, float q)
+    {
         quality = (quality * pledged + q) / (pledged + 1);
         pledged++;
         if (done == 1) fulfilled++;
     }
     // print the formula
-    void showScore() {
+    void showScore()
+    {
         cout << "    Pledges : " << fulfilled << " out of " << pledged << endl;
         cout << "    S = 0.6(" << getF() << ") + 0.4(" << quality
              << ") = " << getScore() << endl;
@@ -70,7 +76,8 @@ public:
 };
 
 // derived class 1
-class Donor : public User {
+class Donor : public User
+{
 private:
     int type;
     DonorTrustProfile trust;
@@ -79,12 +86,14 @@ public:
         : User(uid, uname, z) { type = t;  trust.setData(p, f, q); }
     int getType() { return type; }
     DonorTrustProfile& getTrust() { return trust; }
-    const char* typeName() {
+    const char* typeName()
+    {
         if (type == 1) return "Restaurant";
         if (type == 2) return "Hostel Mess";
         return "Caterer";
     }
-    void display() {
+    void display()
+    {
         cout << "  [DONOR] " << id << " | " << name << " | Zone " << zone
              << " | " << typeName() << " | Trust " << trust.getScore()
              << (trust.isApproved() ? " (AUTO-APPROVED)" : " (MANUAL CHECK)") << endl;
@@ -93,7 +102,8 @@ public:
 };
 
 // derived class 2
-class Recipient : public User {
+class Recipient : public User
+{
 private:
     int capacity;
     int urgency;
@@ -102,7 +112,8 @@ public:
         : User(uid, uname, z) { capacity = cap;  urgency = urg; }
     int getCapacity() { return capacity; }
     int getUrgency() { return urgency; }
-    void display() {
+    void display()
+    {
         cout << "  [NGO  ] " << id << " | " << name << " | Zone " << zone
              << " | Capacity " << capacity << " | Urgency " << urgency << endl;
     }
@@ -111,35 +122,40 @@ public:
 
 // ============== PART A : C DATA STRUCTURE PART ==============
 // hash table with separate chaining, only struct and functions
-
-struct Node {
+struct Node
+{
     char id[20];
     User *user;
     struct Node *next;
 };
 
-struct UserDirectory {
+struct UserDirectory
+{
     struct Node *bucket[TABLE_SIZE];
     int count;
 };
 
 // add ascii values and take remainder
-int hashFunction(const char *key) {
+int hashFunction(const char *key)
+{
     int sum = 0;
     for (int i = 0; key[i] != '\0'; i++) sum = sum + key[i];
     return sum % TABLE_SIZE;
 }
 
 // make all buckets empty
-void initTable(struct UserDirectory *dir) {
+void initTable(struct UserDirectory *dir)
+{
     for (int i = 0; i < TABLE_SIZE; i++) dir->bucket[i] = NULL;
     dir->count = 0;
 }
 
 // go to the bucket and search its chain
-User* searchUser(struct UserDirectory *dir, const char *id) {
+User* searchUser(struct UserDirectory *dir, const char *id)
+{
     struct Node *p = dir->bucket[hashFunction(id)];
-    while (p != NULL) {
+    while (p != NULL)
+    {
         if (strcmp(p->id, id) == 0) return p->user;
         p = p->next;
     }
@@ -147,7 +163,8 @@ User* searchUser(struct UserDirectory *dir, const char *id) {
 }
 
 // insert at the front of the chain
-int insertUser(struct UserDirectory *dir, const char *id, User *u) {
+int insertUser(struct UserDirectory *dir, const char *id, User *u)
+{
     if (searchUser(dir, id) != NULL) return 0;
     int index = hashFunction(id);
     struct Node *newNode = (struct Node *) malloc(sizeof(struct Node));
@@ -160,12 +177,15 @@ int insertUser(struct UserDirectory *dir, const char *id, User *u) {
 }
 
 // unlink one node from its chain
-int deleteUser(struct UserDirectory *dir, const char *id) {
+int deleteUser(struct UserDirectory *dir, const char *id)
+{
     int index = hashFunction(id);
     struct Node *p = dir->bucket[index];
     struct Node *prev = NULL;
-    while (p != NULL) {
-        if (strcmp(p->id, id) == 0) {
+    while (p != NULL)
+    {
+        if (strcmp(p->id, id) == 0)
+        {
             if (prev == NULL) dir->bucket[index] = p->next;
             else prev->next = p->next;
             delete p->user;
@@ -180,10 +200,13 @@ int deleteUser(struct UserDirectory *dir, const char *id) {
 }
 
 // free every node and every object
-void freeTable(struct UserDirectory *dir) {
-    for (int i = 0; i < TABLE_SIZE; i++) {
+void freeTable(struct UserDirectory *dir)
+{
+    for (int i = 0; i < TABLE_SIZE; i++)
+    {
         struct Node *p = dir->bucket[i];
-        while (p != NULL) {
+        while (p != NULL)
+        {
             struct Node *temp = p;
             p = p->next;
             delete temp->user;
@@ -195,23 +218,28 @@ void freeTable(struct UserDirectory *dir) {
 }
 
 // display() is virtual so the correct version runs
-void displayAll(struct UserDirectory *dir) {
+void displayAll(struct UserDirectory *dir)
+{
     cout << "\n  ---- ALL USERS (" << dir->count << ") ----" << endl;
     if (dir->count == 0) { cout << "  directory is empty" << endl;  return; }
-    for (int i = 0; i < TABLE_SIZE; i++) {
+    for (int i = 0; i < TABLE_SIZE; i++)
+    {
         struct Node *p = dir->bucket[i];
         while (p != NULL) { p->user->display();  p = p->next; }
     }
 }
 
 // shows which id went into which bucket
-void displayBuckets(struct UserDirectory *dir) {
+void displayBuckets(struct UserDirectory *dir)
+{
     cout << "\n  ---- HASH TABLE (size " << TABLE_SIZE << ") ----" << endl;
-    for (int i = 0; i < TABLE_SIZE; i++) {
+    for (int i = 0; i < TABLE_SIZE; i++)
+    {
         cout << "  Bucket[" << i << "] : ";
         struct Node *p = dir->bucket[i];
         if (p == NULL) cout << "empty";
-        while (p != NULL) {
+        while (p != NULL)
+        {
             cout << p->id;
             if (p->next != NULL) cout << " -> ";
             p = p->next;
@@ -223,7 +251,8 @@ void displayBuckets(struct UserDirectory *dir) {
 // ================= MENU FUNCTIONS =================
 
 // take donor details from the user
-void registerDonor(struct UserDirectory *dir) {
+void registerDonor(struct UserDirectory *dir)
+{
     char id[20], name[50];
     int zone, type, pledged, fulfilled;
     float quality;
@@ -238,7 +267,8 @@ void registerDonor(struct UserDirectory *dir) {
     cout << "  Pledges fulfilled : ";                cin >> fulfilled;
     cout << "  Avg quality (0-100) : ";              cin >> quality;
     if (zone < 0 || zone >= TOTAL_ZONES || type < 1 || type > 3 || pledged < 0 ||
-        fulfilled < 0 || fulfilled > pledged || quality < 0 || quality > 100) {
+        fulfilled < 0 || fulfilled > pledged || quality < 0 || quality > 100)
+        {
         cout << "  Wrong value entered, donor not added." << endl;
         return;
     }
@@ -249,7 +279,8 @@ void registerDonor(struct UserDirectory *dir) {
 }
 
 // take ngo details from the user
-void registerRecipient(struct UserDirectory *dir) {
+void registerRecipient(struct UserDirectory *dir)
+{
     char id[20], name[50];
     int zone, capacity, urgency;
     cout << "\n  --- REGISTER NGO / SHELTER ---" << endl;
@@ -260,7 +291,8 @@ void registerRecipient(struct UserDirectory *dir) {
     cout << "  Zone (0-5) : ";        cin >> zone;
     cout << "  Capacity (meals) : ";  cin >> capacity;
     cout << "  Urgency (1-10)   : ";  cin >> urgency;
-    if (zone < 0 || zone >= TOTAL_ZONES || capacity <= 0 || urgency < 1 || urgency > 10) {
+    if (zone < 0 || zone >= TOTAL_ZONES || capacity <= 0 || urgency < 1 || urgency > 10)
+    {
         cout << "  Wrong value entered, recipient not added." << endl;
         return;
     }
@@ -269,7 +301,8 @@ void registerRecipient(struct UserDirectory *dir) {
 }
 
 // search and show one user
-void findUserMenu(struct UserDirectory *dir) {
+void findUserMenu(struct UserDirectory *dir)
+{
     char id[20];
     cout << "\n  --- SEARCH USER ---" << endl;
     cout << "  Enter ID : ";  cin >> setw(20) >> id;
@@ -280,7 +313,8 @@ void findUserMenu(struct UserDirectory *dir) {
 }
 
 // show trust score of one donor
-void trustRatingMenu(struct UserDirectory *dir) {
+void trustRatingMenu(struct UserDirectory *dir)
+{
     char id[20];
     cout << "\n  --- DONOR TRUST RATING ---" << endl;
     cout << "  Enter donor ID : ";  cin >> setw(20) >> id;
@@ -292,7 +326,8 @@ void trustRatingMenu(struct UserDirectory *dir) {
 }
 
 // sample data for testing
-void loadDemoUsers(struct UserDirectory *dir) {
+void loadDemoUsers(struct UserDirectory *dir)
+{
     insertUser(dir, "D101", new Donor("D101", "Hotel Sunrise", 1, 1, 10, 9, 88));
     insertUser(dir, "D102", new Donor("D102", "GEU Boys Hostel", 3, 2, 20, 12, 70));
     insertUser(dir, "D103", new Donor("D103", "Royal Caterers", 4, 3, 5, 5, 92));
@@ -304,8 +339,8 @@ void loadDemoUsers(struct UserDirectory *dir) {
 }
 
 // ================= STANDALONE DEMO =================
-
-void demoMember1() {
+void demoMember1()
+{
     struct UserDirectory dir;
     initTable(&dir);
     cout << fixed << setprecision(2);
@@ -321,14 +356,16 @@ void demoMember1() {
     displayBuckets(&dir);
     cout << "\n4. Searching" << endl;
     const char *list[3] = { "D102", "N503", "D999" };
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; i++)
+    {
         cout << "  search " << list[i] << " -> bucket " << hashFunction(list[i]) << " -> ";
         User *u = searchUser(&dir, list[i]);
         cout << (u == NULL ? "not found" : u->getName()) << endl;
     }
     cout << "\n5. Trust rating of all donors" << endl;
     const char *dlist[4] = { "D101", "D102", "D103", "D104" };
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 4; i++)
+    {
         Donor *d = (Donor *) searchUser(&dir, dlist[i]);
         cout << "\n  " << d->getId() << " " << d->getName() << endl;
         d->getTrust().showScore();
@@ -346,7 +383,9 @@ void demoMember1() {
 }
 
 #ifdef M1_STANDALONE
-int main() {
+
+int main()
+{
     demoMember1();
     return 0;
 }

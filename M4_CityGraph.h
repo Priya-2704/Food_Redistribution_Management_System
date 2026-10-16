@@ -17,21 +17,23 @@ using namespace std;
 
 // ============== PART A : C DATA STRUCTURE PART ==============
 // 1) GRAPH as an adjacency matrix, dist[a][b] = km between zone a and b
-
-struct CityGraph {
+struct CityGraph
+{
     int dist[TOTAL_ZONES][TOTAL_ZONES];
     char zoneName[TOTAL_ZONES][25];
 };
 
 // fill the zone names and the distance table
-void initGraph(struct CityGraph *g) {
+void initGraph(struct CityGraph *g)
+{
     strcpy(g->zoneName[0], "Clement Town");
     strcpy(g->zoneName[1], "Rajpur Road");
     strcpy(g->zoneName[2], "Prem Nagar");
     strcpy(g->zoneName[3], "ISBT");
     strcpy(g->zoneName[4], "Sahastradhara");
     strcpy(g->zoneName[5], "Ballupur");
-    int table[6][6] = {
+    int table[6][6] =
+    {
         {  0,  4,  7, 10,  6, 12 },
         {  4,  0,  5,  8,  9, 14 },
         {  7,  5,  0,  6, 11, 10 },
@@ -45,7 +47,8 @@ void initGraph(struct CityGraph *g) {
 }
 
 // O(1), one index, no searching
-int getDistance(struct CityGraph *g, int from, int to) {
+int getDistance(struct CityGraph *g, int from, int to)
+{
     if (from < 0 || from >= TOTAL_ZONES || to < 0 || to >= TOTAL_ZONES) return -1;
     return g->dist[from][to];
 }
@@ -53,7 +56,8 @@ int getDistance(struct CityGraph *g, int from, int to) {
 char* getZoneName(struct CityGraph *g, int zone) { return g->zoneName[zone]; }
 
 // change km into travel hours
-int getTravelTime(struct CityGraph *g, int from, int to) {
+int getTravelTime(struct CityGraph *g, int from, int to)
+{
     int km = getDistance(g, from, to);
     if (km <= 0) return 0;
     // round up, so a 14 km trip counts as 4 hours and not 3.
@@ -64,28 +68,33 @@ int getTravelTime(struct CityGraph *g, int from, int to) {
 }
 
 // scan one row of the matrix for the closest other zone
-int findNearestZone(struct CityGraph *g, int from) {
+int findNearestZone(struct CityGraph *g, int from)
+{
     int best = -1, bestDist = 9999;
-    for (int j = 0; j < TOTAL_ZONES; j++) {
+    for (int j = 0; j < TOTAL_ZONES; j++)
+    {
         if (j == from) continue;
         if (g->dist[from][j] < bestDist) { bestDist = g->dist[from][j];  best = j; }
     }
     return best;
 }
 
-void displayZones(struct CityGraph *g) {
+void displayZones(struct CityGraph *g)
+{
     cout << "\n  ---- CITY ZONES ----" << endl;
     for (int i = 0; i < TOTAL_ZONES; i++)
         cout << "  Zone " << i << " : " << g->zoneName[i] << endl;
 }
 
 // print the whole 2d table
-void displayMatrix(struct CityGraph *g) {
+void displayMatrix(struct CityGraph *g)
+{
     cout << "\n  ---- DISTANCE MATRIX (km) ----" << endl;
     cout << "        ";
     for (int j = 0; j < TOTAL_ZONES; j++) cout << setw(4) << j;
     cout << endl;
-    for (int i = 0; i < TOTAL_ZONES; i++) {
+    for (int i = 0; i < TOTAL_ZONES; i++)
+    {
         cout << "  Z" << i << "   ";
         for (int j = 0; j < TOTAL_ZONES; j++) cout << setw(4) << g->dist[i][j];
         cout << "   " << g->zoneName[i] << endl;
@@ -93,14 +102,15 @@ void displayMatrix(struct CityGraph *g) {
 }
 
 // 2) SINGLY LINKED LIST - the driver's route, one node is one stop
-
-struct Waypoint {
+struct Waypoint
+{
     int zone;
     int distFromPrev;
     struct Waypoint *next;
 };
 
-struct Route {
+struct Route
+{
     struct Waypoint *head;
     int stops;
     int totalKm;
@@ -109,14 +119,17 @@ struct Route {
 void initRoute(struct Route *r) { r->head = NULL;  r->stops = 0;  r->totalKm = 0; }
 
 // add one stop at the end of the route
-void addWaypoint(struct Route *r, int zone, int dist) {
+void addWaypoint(struct Route *r, int zone, int dist)
+{
     struct Waypoint *w = (struct Waypoint *) malloc(sizeof(struct Waypoint));
     w->zone = zone;
     w->distFromPrev = dist;
     w->next = NULL;
-    if (r->head == NULL) {
+    if (r->head == NULL)
+    {
         r->head = w;
-    } else {
+    } else
+    {
         struct Waypoint *p = r->head;
         while (p->next != NULL) p = p->next;    // walk to the last node
         p->next = w;
@@ -125,9 +138,11 @@ void addWaypoint(struct Route *r, int zone, int dist) {
     r->totalKm = r->totalKm + dist;
 }
 
-void freeRoute(struct Route *r) {
+void freeRoute(struct Route *r)
+{
     struct Waypoint *p = r->head;
-    while (p != NULL) {
+    while (p != NULL)
+    {
         struct Waypoint *temp = p;
         p = p->next;
         free(temp);
@@ -136,20 +151,25 @@ void freeRoute(struct Route *r) {
 }
 
 // Feature F5 : greedy nearest neighbour.
+
 // from where we are, go to the closest zone not visited yet, repeat.
 void buildRoute(struct CityGraph *g, struct Route *route, int start,
-                int need[], int totalNeed) {
+                int need[], int totalNeed)
+                {
     int visited[TOTAL_ZONES];
     for (int i = 0; i < TOTAL_ZONES; i++) visited[i] = 0;
     int current = start;
     visited[start] = 1;
     addWaypoint(route, start, 0);
-    for (int step = 0; step < totalNeed; step++) {
+    for (int step = 0; step < totalNeed; step++)
+    {
         int best = -1, bestDist = 9999;
-        for (int k = 0; k < totalNeed; k++) {
+        for (int k = 0; k < totalNeed; k++)
+        {
             int z = need[k];
             if (visited[z] == 1) continue;
-            if (g->dist[current][z] < bestDist) {
+            if (g->dist[current][z] < bestDist)
+            {
                 bestDist = g->dist[current][z];
                 best = z;
             }
@@ -162,12 +182,14 @@ void buildRoute(struct CityGraph *g, struct Route *route, int start,
 }
 
 // walk the linked list and print the itinerary
-void displayRoute(struct CityGraph *g, struct Route *r) {
+void displayRoute(struct CityGraph *g, struct Route *r)
+{
     cout << "\n  ---- DELIVERY ROUTE (" << r->stops << " stops) ----" << endl;
     if (r->head == NULL) { cout << "  no route" << endl;  return; }
     struct Waypoint *p = r->head;
     int n = 1;
-    while (p != NULL) {
+    while (p != NULL)
+    {
         cout << "  " << n << ". " << g->zoneName[p->zone];
         if (p->distFromPrev > 0) cout << "   (+" << p->distFromPrev << " km)";
         else cout << "   (start)";
@@ -181,7 +203,8 @@ void displayRoute(struct CityGraph *g, struct Route *r) {
 // ================= PART B : C++ OOP PART =================
 
 // Feature F8 : simulated clock that can be moved forward
-class SimulatedClock {
+class SimulatedClock
+{
 private:
     int day;
     int hour;
@@ -193,20 +216,23 @@ public:
     // counted from the start, so food age never goes negative after midnight
     int getTotalHours() { return (day - 1) * 24 + hour; }
     // while, not if, so a jump bigger than 24 hours still works
-    void advance(int hours) {
+    void advance(int hours)
+    {
         hour = hour + hours;
         while (hour >= 24) { hour = hour - 24;  day++; }
     }
     void addOneHour() { advance(1); }
     void addThreeHours() { advance(3); }
     void reset() { day = 1;  hour = 8; }
-    const char* getPartOfDay() {
+    const char* getPartOfDay()
+    {
         if (hour >= 5 && hour <= 11) return "Morning";
         if (hour >= 12 && hour <= 16) return "Afternoon";
         if (hour >= 17 && hour <= 20) return "Evening";
         return "Night";
     }
-    void display() {
+    void display()
+    {
         cout << "Day " << day << " , ";
         if (hour < 10) cout << "0";
         cout << hour << ":00 (" << getPartOfDay() << ")";
@@ -216,7 +242,8 @@ public:
 // ================= MENU FUNCTIONS =================
 
 // ask two zones and show the distance
-void distanceMenu(struct CityGraph *g) {
+void distanceMenu(struct CityGraph *g)
+{
     int a, b;
     cout << "\n  --- CHECK DISTANCE ---" << endl;
     displayZones(g);
@@ -233,21 +260,25 @@ void distanceMenu(struct CityGraph *g) {
 }
 
 // ask the stops and build the greedy route
-void routeMenu(struct CityGraph *g) {
+void routeMenu(struct CityGraph *g)
+{
     int start, howMany;
     int need[TOTAL_ZONES];
     cout << "\n  --- BUILD DELIVERY ROUTE ---" << endl;
     displayZones(g);
     cout << "\n  Van starts at zone (0-5) : ";  cin >> start;
     cout << "  How many stops (1-5)     : ";    cin >> howMany;
-    if (start < 0 || start >= TOTAL_ZONES || howMany < 1 || howMany > 5) {
+    if (start < 0 || start >= TOTAL_ZONES || howMany < 1 || howMany > 5)
+    {
         cout << "  Wrong input." << endl;
         return;
     }
-    for (int i = 0; i < howMany; i++) {
+    for (int i = 0; i < howMany; i++)
+    {
         cout << "  Stop " << (i + 1) << " zone : ";
         cin >> need[i];
-        if (need[i] < 0 || need[i] >= TOTAL_ZONES) {
+        if (need[i] < 0 || need[i] >= TOTAL_ZONES)
+        {
             cout << "  Wrong zone number." << endl;
             return;
         }
@@ -260,7 +291,8 @@ void routeMenu(struct CityGraph *g) {
 }
 
 // move the clock forward
-void clockMenu(SimulatedClock *clk) {
+void clockMenu(SimulatedClock *clk)
+{
     int choice;
     cout << "\n  --- SIMULATED CLOCK ---" << endl;
     cout << "  Now : ";  clk->display();  cout << endl;
@@ -279,8 +311,8 @@ void clockMenu(SimulatedClock *clk) {
 }
 
 // ================= STANDALONE DEMO =================
-
-void demoMember4() {
+void demoMember4()
+{
     struct CityGraph city;
     initGraph(&city);
     SimulatedClock clk;
@@ -328,7 +360,9 @@ void demoMember4() {
 }
 
 #ifdef M4_STANDALONE
-int main() {
+
+int main()
+{
     demoMember4();
     return 0;
 }

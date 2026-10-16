@@ -14,7 +14,8 @@ using namespace std;
 // ================= PART B : C++ OOP PART =================
 
 // abstract class, cannot make an object of it
-class FoodItem {
+class FoodItem
+{
 protected:
     char id[20];
     char name[40];
@@ -25,7 +26,8 @@ protected:
     int zone;
 public:
     FoodItem(const char *fid, const char *fname, const char *did,
-             int qty, int prep, int life, int z) {
+             int qty, int prep, int life, int z)
+             {
         strcpy(id, fid);  strcpy(name, fname);  strcpy(donorId, did);
         quantity = qty;  preparedHour = prep;  shelfLife = life;  zone = z;
     }
@@ -41,19 +43,23 @@ public:
     virtual const char* getType() = 0;
     virtual void display(int currentHour) = 0;
     // hours of life left right now
-    float getRemainingLife(int currentHour) {
+    float getRemainingLife(int currentHour)
+    {
         int age = currentHour - preparedHour;
         return shelfLife - (age * getDecayRate());
     }
     // Feature F1 : life left after the van reaches the ngo
-    float getUsableLife(int currentHour, int travelHours) {
+    float getUsableLife(int currentHour, int travelHours)
+    {
         return getRemainingLife(currentHour) - travelHours;
     }
-    int isDeliverable(int currentHour, int travelHours) {
+    int isDeliverable(int currentHour, int travelHours)
+    {
         return (getUsableLife(currentHour, travelHours) > 0) ? 1 : 0;
     }
     // Feature F4 : 1 safe, 4 unsafe
-    int getRiskTier(int currentHour) {
+    int getRiskTier(int currentHour)
+    {
         float left = getRemainingLife(currentHour);
         if (left <= 0) return 4;
         float percent = (left * 100.0) / shelfLife;
@@ -61,7 +67,8 @@ public:
         if (percent > 30) return 2;
         return 3;
     }
-    const char* getTierName(int currentHour) {
+    const char* getTierName(int currentHour)
+    {
         int t = getRiskTier(currentHour);
         if (t == 1) return "TIER 1 SAFE";
         if (t == 2) return "TIER 2 CAUTION";
@@ -71,7 +78,8 @@ public:
 };
 
 // derived class 1, food cooked in a kitchen
-class CookedFood : public FoodItem {
+class CookedFood : public FoodItem
+{
 private:
     int isCovered;
 public:
@@ -81,7 +89,8 @@ public:
     // open food spoils faster than covered food
     float getDecayRate() { return (isCovered == 1) ? 1.5 : 2.0; }
     const char* getType() { return "Cooked"; }
-    void display(int currentHour) {
+    void display(int currentHour)
+    {
         cout << "  [COOKED] " << id << " | " << name << " | " << quantity
              << " meals | Zone " << zone << " | Left " << getRemainingLife(currentHour)
              << " hrs | " << getTierName(currentHour)
@@ -90,7 +99,8 @@ public:
 };
 
 // derived class 2, sealed or packet food
-class PackagedFood : public FoodItem {
+class PackagedFood : public FoodItem
+{
 private:
     int isSealed;
 public:
@@ -100,7 +110,8 @@ public:
     // packet food lasts much longer than cooked food
     float getDecayRate() { return (isSealed == 1) ? 0.5 : 1.0; }
     const char* getType() { return "Packaged"; }
-    void display(int currentHour) {
+    void display(int currentHour)
+    {
         cout << "  [PACKED] " << id << " | " << name << " | " << quantity
              << " meals | Zone " << zone << " | Left " << getRemainingLife(currentHour)
              << " hrs | " << getTierName(currentHour)
@@ -110,26 +121,29 @@ public:
 
 // ============== PART A : C DATA STRUCTURE PART ==============
 // doubly linked list, every node knows the one before and after it
-
-struct FoodNode {
+struct FoodNode
+{
     FoodItem *food;
     struct FoodNode *prev;
     struct FoodNode *next;
 };
 
-struct ActiveFoodList {
+struct ActiveFoodList
+{
     struct FoodNode *head;
     struct FoodNode *tail;
     int count;
 };
 
 // make the list empty
-void initList(struct ActiveFoodList *list) {
+void initList(struct ActiveFoodList *list)
+{
     list->head = NULL;  list->tail = NULL;  list->count = 0;
 }
 
 // add at the end of the list
-void addFood(struct ActiveFoodList *list, FoodItem *f) {
+void addFood(struct ActiveFoodList *list, FoodItem *f)
+{
     struct FoodNode *newNode = (struct FoodNode *) malloc(sizeof(struct FoodNode));
     newNode->food = f;
     newNode->next = NULL;
@@ -141,7 +155,8 @@ void addFood(struct ActiveFoodList *list, FoodItem *f) {
 }
 
 // O(1) delete because the node knows its neighbours
-void removeNode(struct ActiveFoodList *list, struct FoodNode *p) {
+void removeNode(struct ActiveFoodList *list, struct FoodNode *p)
+{
     if (p->prev == NULL) list->head = p->next;
     else p->prev->next = p->next;
     if (p->next == NULL) list->tail = p->prev;
@@ -152,9 +167,11 @@ void removeNode(struct ActiveFoodList *list, struct FoodNode *p) {
 }
 
 // search the list by food id
-struct FoodNode* findFood(struct ActiveFoodList *list, const char *id) {
+struct FoodNode* findFood(struct ActiveFoodList *list, const char *id)
+{
     struct FoodNode *p = list->head;
-    while (p != NULL) {
+    while (p != NULL)
+    {
         if (strcmp(p->food->getId(), id) == 0) return p;
         p = p->next;
     }
@@ -162,9 +179,11 @@ struct FoodNode* findFood(struct ActiveFoodList *list, const char *id) {
 }
 
 // free every node and every object
-void freeList(struct ActiveFoodList *list) {
+void freeList(struct ActiveFoodList *list)
+{
     struct FoodNode *p = list->head;
-    while (p != NULL) {
+    while (p != NULL)
+    {
         struct FoodNode *temp = p;
         p = p->next;
         delete temp->food;
@@ -174,7 +193,8 @@ void freeList(struct ActiveFoodList *list) {
 }
 
 // print head to tail, display() is virtual
-void displayFoodList(struct ActiveFoodList *list, int currentHour) {
+void displayFoodList(struct ActiveFoodList *list, int currentHour)
+{
     cout << "\n  ---- ACTIVE INVENTORY (" << list->count << " items) ----" << endl;
     if (list->count == 0) { cout << "  inventory is empty" << endl;  return; }
     struct FoodNode *p = list->head;
@@ -182,26 +202,32 @@ void displayFoodList(struct ActiveFoodList *list, int currentHour) {
 }
 
 // print tail to head, a singly linked list cannot do this
-void displayReverse(struct ActiveFoodList *list) {
+void displayReverse(struct ActiveFoodList *list)
+{
     cout << "\n  ---- SAME LIST IN REVERSE ----" << endl;
     struct FoodNode *p = list->tail;
-    while (p != NULL) {
+    while (p != NULL)
+    {
         cout << "  " << p->food->getId() << " " << p->food->getName() << endl;
         p = p->prev;
     }
 }
 
 // Feature F4 : group the inventory into risk tiers
-void showRiskTiers(struct ActiveFoodList *list, int currentHour) {
+void showRiskTiers(struct ActiveFoodList *list, int currentHour)
+{
     const char *title[4] = { "TIER 1 SAFE (above 60% life)", "TIER 2 CAUTION (30-60%)",
                              "TIER 3 SERVE NOW (below 30%)", "TIER 4 UNSAFE (expired)" };
     cout << "\n  ---- HYGIENE RISK TIERS (Feature F4) ----" << endl;
-    for (int tier = 1; tier <= 4; tier++) {
+    for (int tier = 1; tier <= 4; tier++)
+    {
         cout << "\n  " << title[tier - 1] << endl;
         struct FoodNode *p = list->head;
         int found = 0;
-        while (p != NULL) {
-            if (p->food->getRiskTier(currentHour) == tier) {
+        while (p != NULL)
+        {
+            if (p->food->getRiskTier(currentHour) == tier)
+            {
                 cout << "    " << p->food->getId() << " " << p->food->getName() << endl;
                 found++;
             }
@@ -212,11 +238,13 @@ void showRiskTiers(struct ActiveFoodList *list, int currentHour) {
 }
 
 // Feature F1 : which food can survive the journey
-void showUsableLife(struct ActiveFoodList *list, int currentHour, int travelHours) {
+void showUsableLife(struct ActiveFoodList *list, int currentHour, int travelHours)
+{
     cout << "\n  ---- USABLE SHELF LIFE (Feature F1) ----" << endl;
     cout << "  Travel time to the NGO = " << travelHours << " hours" << endl;
     struct FoodNode *p = list->head;
-    while (p != NULL) {
+    while (p != NULL)
+    {
         float usable = p->food->getUsableLife(currentHour, travelHours);
         cout << "  " << p->food->getId() << " " << p->food->getName()
              << " : life " << p->food->getRemainingLife(currentHour)
@@ -227,12 +255,15 @@ void showUsableLife(struct ActiveFoodList *list, int currentHour, int travelHour
 }
 
 // delete every item whose life is over
-int removeExpired(struct ActiveFoodList *list, int currentHour) {
+int removeExpired(struct ActiveFoodList *list, int currentHour)
+{
     struct FoodNode *p = list->head;
     int removed = 0;
-    while (p != NULL) {
+    while (p != NULL)
+    {
         struct FoodNode *nextOne = p->next;      // save it before deleting
-        if (p->food->getRemainingLife(currentHour) <= 0) {
+        if (p->food->getRemainingLife(currentHour) <= 0)
+        {
             cout << "  Removed expired : " << p->food->getId()
                  << " " << p->food->getName() << endl;
             removeNode(list, p);
@@ -246,7 +277,8 @@ int removeExpired(struct ActiveFoodList *list, int currentHour) {
 // ================= MENU FUNCTIONS =================
 
 // take food details from the user
-void addFoodMenu(struct ActiveFoodList *list, int currentHour) {
+void addFoodMenu(struct ActiveFoodList *list, int currentHour)
+{
     char id[20], name[40], donorId[20];
     int type, qty, ago, life, zone, flag;
     cout << "\n  --- ADD FOOD DONATION ---" << endl;
@@ -263,15 +295,18 @@ void addFoodMenu(struct ActiveFoodList *list, int currentHour) {
     // shelf life must be above zero, otherwise the tier percentage
     // divides by zero and expired food can be reported as safe
     if (type < 1 || type > 2 || qty <= 0 || ago < 0 || life <= 0 ||
-        zone < 0 || zone >= 6) {
+        zone < 0 || zone >= 6)
+        {
         cout << "  Wrong value entered, food not added." << endl;
         return;
     }
-    if (type == 1) {
+    if (type == 1)
+    {
         cout << "  Kept covered (1=yes 0=no) : ";  cin >> flag;
         addFood(list, new CookedFood(id, name, donorId, qty,
                                      currentHour - ago, life, zone, flag));
-    } else {
+    } else
+    {
         cout << "  Packet sealed (1=yes 0=no) : ";  cin >> flag;
         addFood(list, new PackagedFood(id, name, donorId, qty,
                                        currentHour - ago, life, zone, flag));
@@ -280,7 +315,8 @@ void addFoodMenu(struct ActiveFoodList *list, int currentHour) {
 }
 
 // full report of one food item
-void checkFoodMenu(struct ActiveFoodList *list, int currentHour) {
+void checkFoodMenu(struct ActiveFoodList *list, int currentHour)
+{
     char id[20];
     int travel;
     cout << "\n  --- CHECK ONE FOOD ITEM ---" << endl;
@@ -300,7 +336,8 @@ void checkFoodMenu(struct ActiveFoodList *list, int currentHour) {
 }
 
 // sample data, prepared times counted back from now
-void loadDemoFood(struct ActiveFoodList *list, int currentHour) {
+void loadDemoFood(struct ActiveFoodList *list, int currentHour)
+{
     addFood(list, new CookedFood("F201", "Veg Biryani", "D101", 50, currentHour - 4, 8, 1, 1));
     addFood(list, new CookedFood("F202", "Dal Rice", "D102", 80, currentHour - 6, 8, 3, 0));
     addFood(list, new PackagedFood("F203", "Bread Packets", "D103", 100, currentHour - 8, 48, 4, 1));
@@ -310,8 +347,8 @@ void loadDemoFood(struct ActiveFoodList *list, int currentHour) {
 }
 
 // ================= STANDALONE DEMO =================
-
-void demoMember2() {
+void demoMember2()
+{
     struct ActiveFoodList list;
     initList(&list);
     int currentHour = 18;
@@ -328,7 +365,8 @@ void demoMember2() {
     displayReverse(&list);
     cout << "\n4. Different decay rates (polymorphism)" << endl;
     struct FoodNode *p = list.head;
-    while (p != NULL) {
+    while (p != NULL)
+    {
         cout << "  " << setw(16) << left << p->food->getName()
              << setw(11) << p->food->getType() << p->food->getDecayRate() << endl;
         p = p->next;
@@ -350,7 +388,9 @@ void demoMember2() {
 }
 
 #ifdef M2_STANDALONE
-int main() {
+
+int main()
+{
     demoMember2();
     return 0;
 }

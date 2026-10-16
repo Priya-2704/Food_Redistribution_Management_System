@@ -19,7 +19,8 @@ using namespace std;
 // ================= PART B : C++ OOP PART =================
 
 // one food request raised by an ngo
-class Request {
+class Request
+{
 private:
     char reqId[20];
     char ngoId[20];
@@ -28,7 +29,8 @@ private:
     int arrivalHour;
     int zone;
 public:
-    Request(const char *rid, const char *nid, int meals, int urg, int arrival, int z) {
+    Request(const char *rid, const char *nid, int meals, int urg, int arrival, int z)
+    {
         strcpy(reqId, rid);  strcpy(ngoId, nid);
         mealsNeeded = meals;  urgency = urg;  arrivalHour = arrival;  zone = z;
     }
@@ -41,14 +43,16 @@ public:
     // E part, urgency 1-10 becomes 10-100
     float getE() { return urgency * 10; }
     // W part, every hour of waiting adds 10, stopped at 100
-    float getW(int currentHour) {
+    float getW(int currentHour)
+    {
         int waited = currentHour - arrivalHour;
         if (waited < 0) waited = 0;
         float w = waited * 10;
         if (w > 100) w = 100;
         return w;
     }
-    void display(int currentHour) {
+    void display(int currentHour)
+    {
         cout << "  " << reqId << " | NGO " << ngoId << " | " << mealsNeeded
              << " meals | Zone " << zone << " | Urgency " << urgency
              << " | Waiting " << (currentHour - arrivalHour) << " hrs" << endl;
@@ -56,14 +60,16 @@ public:
 };
 
 // Z part, nearer zone gets a higher score
-float getZoneScore(int distance) {
+float getZoneScore(int distance)
+{
     float z = 100 - (distance * 5);
     if (z < 0) z = 0;
     return z;
 }
 
 // one food to ngo pairing with its priority score
-class MatchPair {
+class MatchPair
+{
 private:
     char foodId[20];
     char ngoId[20];
@@ -73,7 +79,8 @@ private:
     float priority;
 public:
     MatchPair(const char *fid, const char *nid, int m, int dist,
-              float e, float w, float z) {
+              float e, float w, float z)
+              {
         strcpy(foodId, fid);  strcpy(ngoId, nid);
         meals = m;  distance = dist;  E = e;  W = w;  Z = z;
         priority = 0.5 * E + 0.3 * W + 0.2 * Z;     // Feature F2
@@ -84,11 +91,13 @@ public:
     // compare two pairs by their priority score
     int operator > (MatchPair &other) { return (priority > other.priority) ? 1 : 0; }
     int operator < (MatchPair &other) { return (priority < other.priority) ? 1 : 0; }
-    void display() {
+    void display()
+    {
         cout << "  " << foodId << " -> " << ngoId << " | " << meals
              << " meals | " << distance << " km | P = " << priority << endl;
     }
-    void showFormula() {
+    void showFormula()
+    {
         cout << "  " << foodId << " -> " << ngoId << endl;
         cout << "      P = 0.5(" << E << ") + 0.3(" << W << ") + 0.2(" << Z
              << ") = " << priority << endl;
@@ -97,8 +106,8 @@ public:
 
 // ============== PART A : C DATA STRUCTURE PART ==============
 // 1) CIRCULAR QUEUE - ngo requests in first come first serve order
-
-struct RequestQueue {
+struct RequestQueue
+{
     Request *items[MAX_REQUESTS];
     int front;
     int rear;
@@ -106,15 +115,18 @@ struct RequestQueue {
 };
 
 // rear starts at -1 because enqueue increases it first
-void initQueue(struct RequestQueue *q) {
+void initQueue(struct RequestQueue *q)
+{
     q->front = 0;  q->rear = -1;  q->count = 0;
 }
 
 int isQueueFull(struct RequestQueue *q) { return (q->count == MAX_REQUESTS) ? 1 : 0; }
+
 int isQueueEmpty(struct RequestQueue *q) { return (q->count == 0) ? 1 : 0; }
 
 // add at the rear, % makes it come back to 0
-int enqueue(struct RequestQueue *q, Request *r) {
+int enqueue(struct RequestQueue *q, Request *r)
+{
     if (isQueueFull(q) == 1) { cout << "  Queue is full." << endl;  return 0; }
     q->rear = (q->rear + 1) % MAX_REQUESTS;
     q->items[q->rear] = r;
@@ -123,7 +135,8 @@ int enqueue(struct RequestQueue *q, Request *r) {
 }
 
 // remove from the front
-Request* dequeue(struct RequestQueue *q) {
+Request* dequeue(struct RequestQueue *q)
+{
     if (isQueueEmpty(q) == 1) return NULL;
     Request *r = q->items[q->front];
     q->front = (q->front + 1) % MAX_REQUESTS;
@@ -132,12 +145,14 @@ Request* dequeue(struct RequestQueue *q) {
 }
 
 // walk count items, not front to rear, because it may have wrapped
-void displayQueue(struct RequestQueue *q, int currentHour) {
+void displayQueue(struct RequestQueue *q, int currentHour)
+{
     cout << "\n  ---- REQUEST QUEUE (" << q->count << " waiting) ----" << endl;
     if (isQueueEmpty(q) == 1) { cout << "  queue is empty" << endl;  return; }
     cout << "  front index = " << q->front << " , rear index = " << q->rear << endl;
     int i = q->front;
-    for (int n = 0; n < q->count; n++) {
+    for (int n = 0; n < q->count; n++)
+    {
         cout << "  [" << i << "] ";
         q->items[i]->display(currentHour);
         i = (i + 1) % MAX_REQUESTS;
@@ -145,8 +160,8 @@ void displayQueue(struct RequestQueue *q, int currentHour) {
 }
 
 // 2) SORTED ARRAY - priority list, biggest score always at position 0
-
-struct MatchList {
+struct MatchList
+{
     MatchPair *items[MAX_MATCHES];
     int size;
 };
@@ -154,7 +169,8 @@ struct MatchList {
 void initMatchList(struct MatchList *l) { l->size = 0; }
 
 // insertion sort step, shift smaller ones right and drop the new one in
-int insertSorted(struct MatchList *l, MatchPair *m) {
+int insertSorted(struct MatchList *l, MatchPair *m)
+{
     if (l->size == MAX_MATCHES) { cout << "  List is full." << endl;  return 0; }
     int i = l->size - 1;
     while (i >= 0 && *l->items[i] < *m) {       // uses our overloaded <
@@ -167,7 +183,8 @@ int insertSorted(struct MatchList *l, MatchPair *m) {
 }
 
 // take the best match from the front and shift the rest left
-MatchPair* removeBest(struct MatchList *l) {
+MatchPair* removeBest(struct MatchList *l)
+{
     if (l->size == 0) return NULL;
     MatchPair *best = l->items[0];
     for (int i = 0; i < l->size - 1; i++)
@@ -176,16 +193,19 @@ MatchPair* removeBest(struct MatchList *l) {
     return best;
 }
 
-void freeMatchList(struct MatchList *l) {
+void freeMatchList(struct MatchList *l)
+{
     for (int i = 0; i < l->size; i++) delete l->items[i];
     l->size = 0;
 }
 
 // print the priority list
-void displayMatchList(struct MatchList *l) {
+void displayMatchList(struct MatchList *l)
+{
     cout << "\n  ---- PRIORITY LIST (" << l->size << " pairs) ----" << endl;
     if (l->size == 0) { cout << "  list is empty" << endl;  return; }
-    for (int i = 0; i < l->size; i++) {
+    for (int i = 0; i < l->size; i++)
+    {
         cout << "  index " << setw(2) << i << " : " << l->items[i]->getFoodId()
              << " -> " << l->items[i]->getNgoId()
              << "   P = " << l->items[i]->getPriority();
@@ -196,14 +216,15 @@ void displayMatchList(struct MatchList *l) {
 
 // ================= THE ENGINE CLASS =================
 // joins the queue and the priority list together
-
-class MatchingEngine {
+class MatchingEngine
+{
 private:
     struct RequestQueue queue;
     struct MatchList matches;
 public:
     MatchingEngine() { initQueue(&queue);  initMatchList(&matches); }
-    ~MatchingEngine() {
+    ~MatchingEngine()
+    {
         while (isQueueEmpty(&queue) == 0) delete dequeue(&queue);
         freeMatchList(&matches);
     }
@@ -215,18 +236,21 @@ public:
     int addRequest(Request *r) { return enqueue(&queue, r); }
     // build one pair and put it in the sorted list
     void addCandidate(const char *foodId, Request *r, int distance,
-                      int mealsGiven, int currentHour) {
+                      int mealsGiven, int currentHour)
+                      {
         MatchPair *m = new MatchPair(foodId, r->getNgoId(), mealsGiven, distance,
                                      r->getE(), r->getW(currentHour),
                                      getZoneScore(distance));
         insertSorted(&matches, m);
     }
     // take out matches one by one, best first
-    void runMatching() {
+    void runMatching()
+    {
         cout << "\n  ---- MATCHING RESULT (highest priority first) ----" << endl;
         if (matches.size == 0) { cout << "  no candidates" << endl;  return; }
         int rank = 1;
-        while (matches.size > 0) {
+        while (matches.size > 0)
+        {
             MatchPair *best = removeBest(&matches);
             cout << "  " << rank << ". ";
             best->display();
@@ -239,7 +263,8 @@ public:
 // ================= MENU FUNCTIONS =================
 
 // take request details from the user
-void addRequestMenu(MatchingEngine *engine, int currentHour) {
+void addRequestMenu(MatchingEngine *engine, int currentHour)
+{
     char reqId[20], ngoId[20];
     int meals, urgency, zone;
     cout << "\n  --- RAISE NGO REQUEST ---" << endl;
@@ -248,7 +273,8 @@ void addRequestMenu(MatchingEngine *engine, int currentHour) {
     cout << "  Meals needed   : ";  cin >> meals;
     cout << "  Urgency (1-10) : ";  cin >> urgency;
     cout << "  Zone (0-5)     : ";  cin >> zone;
-    if (meals <= 0 || urgency < 1 || urgency > 10 || zone < 0 || zone >= TOTAL_ZONES) {
+    if (meals <= 0 || urgency < 1 || urgency > 10 || zone < 0 || zone >= TOTAL_ZONES)
+    {
         cout << "  Wrong value entered, request not added." << endl;
         return;
     }
@@ -260,7 +286,8 @@ void addRequestMenu(MatchingEngine *engine, int currentHour) {
 }
 
 // serve the front request in fifo order
-void serveNextMenu(MatchingEngine *engine, int currentHour) {
+void serveNextMenu(MatchingEngine *engine, int currentHour)
+{
     cout << "\n  --- SERVE NEXT REQUEST (FIFO) ---" << endl;
     Request *r = dequeue(engine->getQueue());
     if (r == NULL) { cout << "  Queue is empty." << endl;  return; }
@@ -271,8 +298,8 @@ void serveNextMenu(MatchingEngine *engine, int currentHour) {
 
 // ================= STANDALONE DEMO =================
 // distance table used only when this file is run on its own
-
-int demoDist[6][6] = {
+int demoDist[6][6] =
+{
     {  0,  4,  7, 10,  6, 12 },
     {  4,  0,  5,  8,  9, 14 },
     {  7,  5,  0,  6, 11, 10 },
@@ -281,7 +308,8 @@ int demoDist[6][6] = {
     { 12, 14, 10,  9,  8,  0 }
 };
 
-void demoMember3() {
+void demoMember3()
+{
     int currentHour = 18;
     cout << fixed << setprecision(1);
     cout << "=========================================================" << endl;
@@ -342,7 +370,9 @@ void demoMember3() {
 }
 
 #ifdef M3_STANDALONE
-int main() {
+
+int main()
+{
     demoMember3();
     return 0;
 }

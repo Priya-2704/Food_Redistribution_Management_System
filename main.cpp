@@ -1,5 +1,5 @@
 // main.cpp
-// FOOD REDISTRIBUTION MANAGEMENT SYSTEM (FRMS) - 50% BUILD
+// FOOD REDISTRIBUTION MANAGEMENT SYSTEM (FRMS)
 // Joins the work of all four members into one menu.
 // Compile :  g++ -std=c++11 main.cpp -o frms.exe
 #include "M1_UserDirectory.h"
@@ -9,11 +9,13 @@
 using namespace std;
 
 // read a menu number, recover if the user types a letter
-int readChoice() {
+int readChoice()
+{
     int choice;
     cin >> choice;
     if (cin.eof()) return 0;        // no input left, close the program
-    if (cin.fail()) {
+    if (cin.fail())
+    {
         cin.clear();                // remove the error flag
         cin.ignore(100, '\n');      // throw away the bad letters
         return -1;
@@ -22,34 +24,36 @@ int readChoice() {
 }
 
 // print the menu grouped by member
-void showMenu(SimulatedClock *clk) {
+void showMenu(SimulatedClock *clk)
+{
     cout << "\n=========================================================" << endl;
-    cout << "   FOOD REDISTRIBUTION MANAGEMENT SYSTEM  (50% BUILD)" << endl;
+    cout << "   FOOD REDISTRIBUTION MANAGEMENT SYSTEM" << endl;
     cout << "   Time : ";  clk->display();  cout << endl;
     cout << "=========================================================" << endl;
-    cout << "\n  -- Member 1 : User Directory --" << endl;
+    cout << "\n  -- User Directory --" << endl;
     cout << "   1. Register Donor            4. Display All Users" << endl;
     cout << "   2. Register NGO / Shelter    5. Donor Trust Rating" << endl;
     cout << "   3. Search User by ID         6. Show Hash Table Buckets" << endl;
-    cout << "\n  -- Member 2 : Food Inventory --" << endl;
+    cout << "\n  -- Food Inventory --" << endl;
     cout << "   7. Add Food Donation        10. Show Hygiene Risk Tiers" << endl;
     cout << "   8. Show Active Inventory    11. Remove Expired Food" << endl;
     cout << "   9. Check One Food Item" << endl;
-    cout << "\n  -- Member 3 : Matching Engine --" << endl;
+    cout << "\n  -- Matching Engine --" << endl;
     cout << "  12. Raise NGO Request        14. RUN PRIORITY MATCHING" << endl;
     cout << "  13. Show Request Queue       15. Serve Next Request (FIFO)" << endl;
-    cout << "\n  -- Member 4 : City Map, Route and Clock --" << endl;
+    cout << "\n  -- City Map, Route and Clock --" << endl;
     cout << "  16. Show City Zone Map       18. Build Delivery Route" << endl;
     cout << "  17. Distance Between Zones   19. Move Clock Forward" << endl;
     cout << "\n  -- System --" << endl;
-    cout << "  20. Load Demo Data           21. Run One Member's Demo" << endl;
+    cout << "  20. Load Demo Data           21. Run Module Demo" << endl;
     cout << "   0. Exit" << endl;
     cout << "\n  Enter choice : ";
 }
 
 // fill the system with sample data in one keypress
 void loadAllDemoData(struct UserDirectory *dir, struct ActiveFoodList *food,
-                     MatchingEngine *engine, int nowHours) {
+                     MatchingEngine *engine, int nowHours)
+                     {
     cout << "\n  --- LOADING DEMO DATA ---" << endl;
     loadDemoUsers(dir);
     loadDemoFood(food, nowHours);
@@ -60,27 +64,33 @@ void loadAllDemoData(struct UserDirectory *dir, struct ActiveFoodList *food,
 }
 
 // all four members work together here :
-// Member 4 gives the distance, Member 2 checks the food survives the trip,
-// Member 3 scores and ranks whatever is left
+// the city graph gives the distance, the inventory checks the food
+
+// survives the trip, the engine scores and ranks whatever is left
 void runFullMatching(struct ActiveFoodList *food, MatchingEngine *engine,
-                     struct CityGraph *city, int nowHours) {
+                     struct CityGraph *city, int nowHours)
+                     {
     cout << "\n  --- RUNNING PRIORITY MATCHING ---" << endl;
     if (food->count == 0) { cout << "  No food in the inventory." << endl;  return; }
     if (engine->getQueueCount() == 0) { cout << "  No NGO requests." << endl;  return; }
     struct RequestQueue *q = engine->getQueue();
     struct FoodNode *f = food->head;
     int good = 0, rejected = 0;
-    while (f != NULL) {
+    while (f != NULL)
+    {
         int i = q->front;
-        for (int n = 0; n < q->count; n++) {
+        for (int n = 0; n < q->count; n++)
+        {
             Request *r = q->items[i];
             int travel = getTravelTime(city, f->food->getZone(), r->getZone());
             int km = getDistance(city, f->food->getZone(), r->getZone());
-            if (f->food->isDeliverable(nowHours, travel) == 1) {
+            if (f->food->isDeliverable(nowHours, travel) == 1)
+            {
                 engine->addCandidate(f->food->getId(), r, km,
                                      f->food->getQuantity(), nowHours);
                 good++;
-            } else {
+            } else
+            {
                 cout << "  skipped " << f->food->getId() << " -> " << r->getNgoId()
                      << " (only " << f->food->getUsableLife(nowHours, travel)
                      << " hrs usable after " << travel << " hr trip)" << endl;
@@ -96,12 +106,13 @@ void runFullMatching(struct ActiveFoodList *food, MatchingEngine *engine,
 }
 
 // run any one member's own demo
-void memberDemoMenu() {
-    cout << "\n  --- RUN ONE MEMBER'S DEMO ---" << endl;
-    cout << "   1. Member 1 - User Directory and Trust" << endl;
-    cout << "   2. Member 2 - Food Inventory and Decay" << endl;
-    cout << "   3. Member 3 - Matching Engine" << endl;
-    cout << "   4. Member 4 - City Map, Route and Clock" << endl;
+void memberDemoMenu()
+{
+    cout << "\n  --- RUN MODULE DEMO ---" << endl;
+    cout << "   1. User Directory and Trust Rating" << endl;
+    cout << "   2. Food Inventory and Decay" << endl;
+    cout << "   3. Priority Matching Engine" << endl;
+    cout << "   4. City Map, Route and Clock" << endl;
     cout << "  Choice : ";
     int n = readChoice();
     if (n == 1) demoMember1();
@@ -112,7 +123,8 @@ void memberDemoMenu() {
     cout << fixed << setprecision(1);    // the demos change this, set it back
 }
 
-int main() {
+int main()
+{
     struct UserDirectory dir;
     struct ActiveFoodList food;
     struct CityGraph city;
@@ -124,11 +136,13 @@ int main() {
     cout << fixed << setprecision(1);
     cout << "\n  Welcome. Press 20 to load demo data first." << endl;
     int choice;
-    do {
+    do
+    {
         showMenu(&clk);
         choice = readChoice();
         int now = clk.getTotalHours();      // re-read so the clock takes effect
-        switch (choice) {
+        switch (choice)
+        {
             case 1:  registerDonor(&dir);                       break;
             case 2:  registerRecipient(&dir);                   break;
             case 3:  findUserMenu(&dir);                        break;
