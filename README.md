@@ -1,112 +1,52 @@
 # Food Redistribution Management System (FRMS)
 
-A C++ console application that matches surplus food donors (restaurants, hostel
-messes, caterers) with recipients (NGOs, shelters, orphanages), so edible food
-reaches people instead of being thrown away.
+C++ console project for Data Structures in C and OOP with C++.
+It matches food donors with NGOs and shelters before the food spoils.
 
-Graphic Era Hill University · Data Structures in C + Object Oriented Programming with C++
+Graphic Era Hill University
 
----
+## How to run
 
-## Build and run
-
-```bash
-g++ -std=c++11 main.cpp -o frms.exe
 ```
-
-```bash
+g++ -std=c++11 main.cpp -o frms.exe
 ./frms.exe
 ```
 
-Press **23** to load demo data, then **17** to run the priority matching.
+Press 23 to load the sample data, then 17 to run the matching.
 
----
-
-## Project structure
-
-| File | Member | Data structure | Feature |
-|---|---|---|---|
-| `M1_UserDirectory.h` | 1 | Hash Table with Separate Chaining | S4 — Donor Trust Rating |
-| `M2_FoodInventory.h` | 2 | Doubly Linked List | F1 — Usable Shelf Life, F4 — Risk Tiers |
-| `M3_MatchingEngine.h` | 3 | Circular Queue + Sorted Array | F2 — Priority Matching |
-| `M4_CityGraph.h` | 4 | Graph (Adjacency Matrix) + Singly Linked List | F5 — Route, F8 — Simulated Clock |
-| `main.cpp` | 4 | — | Console menu, system integration |
-
-Each file is split into two clearly marked sections:
-
-- **Part A** — C data structure layer: plain `struct`, standalone functions, `malloc`/`free`
-- **Part B** — C++ OOP layer: classes, inheritance, virtual functions, operator overloading
-
-No STL containers are used anywhere. Storage is built from scratch with arrays,
-pointers and `char` strings.
-
----
-
-## Features implemented
-
-| ID | Feature | Formula / method |
-|---|---|---|
-| **S4** | Donor Trust & Reliability Rating | `S = 0.6F + 0.4Q`, auto-approve at S ≥ 75 |
-| **F1** | Usable Shelf Life | remaining life − transit time |
-| **F4** | Risk-Tiered Hygiene Categorisation | 4 tiers by % of shelf life left |
-| **F2** | Multi-Factor Priority Matching | `P = 0.5E + 0.3W + 0.2Z` |
-| **F5** | Multi-Stop Route Aggregator | greedy nearest-neighbour traversal |
-| **F8** | Simulated Clock | +1h / +3h time jumps |
-
-### Spoilage model
-
-One clock hour is not one hour of shelf life:
-
-| Food state | Decay rate |
-|---|---|
-| Cooked, covered | 1.5× |
-| Cooked, open | 2.0× |
-| Packaged, sealed | 0.5× |
-| Packaged, opened | 1.0× |
-
----
-
-## How the modules work together
-
-Menu option **14** is where all four members' work runs on the same data:
+## Files
 
 ```
-the city graph  gives the distance and travel time between zones
-the inventory   checks whether the food survives that journey   (Feature F1)
-the engine      scores and ranks whatever survives              (Feature F2)
+M1_UserDirectory.h    hash table, donor trust rating
+M2_FoodInventory.h    doubly linked list, food decay, shelf life
+M3_MatchingEngine.h   circular queue, sorted array, priority score
+M4_CityGraph.h        adjacency matrix, delivery route, clock
+main.cpp              menu
 ```
 
-Sample output:
+Each file has a C part with structs and functions, and a C++ part
+with classes. No STL containers are used anywhere.
+
+## Features done
 
 ```
-skipped F201 -> N502 (only -2.0 hrs usable after 4 hr trip)
-9 pairs accepted, 6 rejected by shelf life.
-
-1.  F201 -> N503 | 50 meals | 0 km | P = 73.0
-2.  F204 -> N503 | 30 meals | 0 km | P = 73.0
+Donor trust rating    S = 0.6F + 0.4Q, approved at 75
+Usable shelf life     life left minus travel time
+Hygiene risk tiers    4 levels by percent of life left
+Priority matching     P = 0.5E + 0.3W + 0.2Z
+Delivery route        nearest unvisited zone each time
+Simulated clock       +1 and +3 hour jumps
 ```
 
-The same biryani is **rejected** for one shelter (4-hour trip, arrives spoiled)
-and **ranked first** for another (same zone, 0 km).
+Cooked food decays faster than packed food. Open cooked food decays
+at twice the clock, a sealed packet at half.
 
----
+## Still to do
 
-## Future work
+Temperature decay, splitting big donations between shelters,
+zero waste pipeline, predicting leftovers, audit stack,
+saving and loading from a file.
 
-| Feature | Description |
-|---|---|
-| S2 | Ambient temperature decay multiplier |
-| F3 | Greedy multi-split allocator for bulk donations |
-| S1 | 3-tier zero-waste fallback pipeline (animal rescue → bio-compost) |
-| S5 | Predictive pre-reservation using exponential smoothing |
-| — | Max-heap priority queue, replacing the sorted array (O(n) → O(log n)) |
-| — | LIFO stack for audit transaction logs |
-| — | File I/O persistence |
+## Built with
 
----
-
-## Build environment
-
-- MinGW g++ 6.3.0, compiled with `-std=c++11`
-- Windows 11, VS Code
-- No external libraries, no STL containers
+MinGW g++ 6.3.0 on Windows, no libraries.
