@@ -31,29 +31,30 @@ void showMenu(SimulatedClock *clk)
     cout << "   Time : ";  clk->display();  cout << endl;
     cout << "=========================================================" << endl;
     cout << "\n  -- User Directory --" << endl;
-    cout << "   1. Register Donor            4. Display All Users" << endl;
-    cout << "   2. Register NGO / Shelter    5. Donor Trust Rating" << endl;
-    cout << "   3. Search User by ID         6. Show Hash Table Buckets" << endl;
+    cout << "   1. Register Donor            5. Donor Trust Rating" << endl;
+    cout << "   2. Register NGO / Shelter    6. Show Hash Table Buckets" << endl;
+    cout << "   3. Search User by ID         7. Delete a User" << endl;
+    cout << "   4. Display All Users" << endl;
     cout << "\n  -- Food Inventory --" << endl;
-    cout << "   7. Add Food Donation        10. Show Hygiene Risk Tiers" << endl;
-    cout << "   8. Show Active Inventory    11. Remove Expired Food" << endl;
-    cout << "   9. Check One Food Item" << endl;
+    cout << "   8. Add Food Donation        12. Check All Food vs Travel" << endl;
+    cout << "   9. Show Active Inventory    13. Show Hygiene Risk Tiers" << endl;
+    cout << "  10. Show Inventory Reversed  14. Remove Expired Food" << endl;
+    cout << "  11. Check One Food Item" << endl;
     cout << "\n  -- Matching Engine --" << endl;
-    cout << "  12. Raise NGO Request        14. RUN PRIORITY MATCHING" << endl;
-    cout << "  13. Show Request Queue       15. Serve Next Request (FIFO)" << endl;
+    cout << "  15. Raise NGO Request        17. RUN PRIORITY MATCHING" << endl;
+    cout << "  16. Show Request Queue       18. Serve Next Request (FIFO)" << endl;
     cout << "\n  -- City Map, Route and Clock --" << endl;
-    cout << "  16. Show City Zone Map       18. Build Delivery Route" << endl;
-    cout << "  17. Distance Between Zones   19. Move Clock Forward" << endl;
+    cout << "  19. Show City Zone Map       21. Build Delivery Route" << endl;
+    cout << "  20. Distance Between Zones   22. Move Clock Forward" << endl;
     cout << "\n  -- System --" << endl;
-    cout << "  20. Load Demo Data           21. Run Module Demo" << endl;
-    cout << "   0. Exit" << endl;
+    cout << "  23. Load Demo Data            0. Exit" << endl;
     cout << "\n  Enter choice : ";
 }
 
 // fill the system with sample data in one keypress
 void loadAllDemoData(struct UserDirectory *dir, struct ActiveFoodList *food,
                      MatchingEngine *engine, int nowHours)
-                     {
+{
     cout << "\n  --- LOADING DEMO DATA ---" << endl;
     loadDemoUsers(dir);
     loadDemoFood(food, nowHours);
@@ -65,11 +66,10 @@ void loadAllDemoData(struct UserDirectory *dir, struct ActiveFoodList *food,
 
 // all four members work together here :
 // the city graph gives the distance, the inventory checks the food
-
 // survives the trip, the engine scores and ranks whatever is left
 void runFullMatching(struct ActiveFoodList *food, MatchingEngine *engine,
                      struct CityGraph *city, int nowHours)
-                     {
+{
     cout << "\n  --- RUNNING PRIORITY MATCHING ---" << endl;
     if (food->count == 0) { cout << "  No food in the inventory." << endl;  return; }
     if (engine->getQueueCount() == 0) { cout << "  No NGO requests." << endl;  return; }
@@ -105,22 +105,16 @@ void runFullMatching(struct ActiveFoodList *food, MatchingEngine *engine,
     engine->runMatching();
 }
 
-// run any one member's own demo
-void memberDemoMenu()
+// ask for an id and remove that user from the hash table
+void deleteUserMenu(struct UserDirectory *dir)
 {
-    cout << "\n  --- RUN MODULE DEMO ---" << endl;
-    cout << "   1. User Directory and Trust Rating" << endl;
-    cout << "   2. Food Inventory and Decay" << endl;
-    cout << "   3. Priority Matching Engine" << endl;
-    cout << "   4. City Map, Route and Clock" << endl;
-    cout << "  Choice : ";
-    int n = readChoice();
-    if (n == 1) demoMember1();
-    else if (n == 2) demoMember2();
-    else if (n == 3) demoMember3();
-    else if (n == 4) demoMember4();
-    else cout << "  Wrong choice." << endl;
-    cout << fixed << setprecision(1);    // the demos change this, set it back
+    char id[20];
+    cout << "\n  --- DELETE A USER ---" << endl;
+    cout << "  Enter ID : ";  cin >> setw(20) >> id;
+    if (deleteUser(dir, id) == 1)
+        cout << "  Removed " << id << ". Users left : " << dir->count << endl;
+    else
+        cout << "  No user with this ID." << endl;
 }
 
 int main()
@@ -134,7 +128,7 @@ int main()
     initList(&food);
     initGraph(&city);
     cout << fixed << setprecision(1);
-    cout << "\n  Welcome. Press 20 to load demo data first." << endl;
+    cout << "\n  Welcome. Press 23 to load demo data first." << endl;
     int choice;
     do
     {
@@ -149,24 +143,33 @@ int main()
             case 4:  displayAll(&dir);                          break;
             case 5:  trustRatingMenu(&dir);                     break;
             case 6:  displayBuckets(&dir);                      break;
-            case 7:  addFoodMenu(&food, now);                   break;
-            case 8:  displayFoodList(&food, now);               break;
-            case 9:  checkFoodMenu(&food, now);                 break;
-            case 10: showRiskTiers(&food, now);                 break;
-            case 11:
+            case 7:  deleteUserMenu(&dir);                      break;
+            case 8:  addFoodMenu(&food, now);                   break;
+            case 9:  displayFoodList(&food, now);               break;
+            case 10: displayReverse(&food);                     break;
+            case 11: checkFoodMenu(&food, now);                 break;
+            case 12:
+            {
+                int travel;
+                cout << "\n  Travel hours to the NGO : ";
+                cin >> travel;
+                showUsableLife(&food, now, travel);
+                break;
+            }
+            case 13: showRiskTiers(&food, now);                 break;
+            case 14:
                 cout << "\n  --- REMOVING EXPIRED FOOD ---" << endl;
                 cout << "  " << removeExpired(&food, now) << " item(s) removed." << endl;
                 break;
-            case 12: addRequestMenu(&engine, now);              break;
-            case 13: displayQueue(engine.getQueue(), now);      break;
-            case 14: runFullMatching(&food, &engine, &city, now); break;
-            case 15: serveNextMenu(&engine, now);               break;
-            case 16: displayZones(&city);  displayMatrix(&city); break;
-            case 17: distanceMenu(&city);                       break;
-            case 18: routeMenu(&city);                          break;
-            case 19: clockMenu(&clk);                           break;
-            case 20: loadAllDemoData(&dir, &food, &engine, now); break;
-            case 21: memberDemoMenu();                          break;
+            case 15: addRequestMenu(&engine, now);              break;
+            case 16: displayQueue(engine.getQueue(), now);      break;
+            case 17: runFullMatching(&food, &engine, &city, now); break;
+            case 18: serveNextMenu(&engine, now);               break;
+            case 19: displayZones(&city);  displayMatrix(&city); break;
+            case 20: distanceMenu(&city);                       break;
+            case 21: routeMenu(&city);                          break;
+            case 22: clockMenu(&clk);                           break;
+            case 23: loadAllDemoData(&dir, &food, &engine, now); break;
             case 0:  cout << "\n  Closing the system..." << endl; break;
             default: cout << "\n  Wrong choice, please try again." << endl; break;
         }

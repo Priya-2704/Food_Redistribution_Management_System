@@ -151,11 +151,10 @@ void freeRoute(struct Route *r)
 }
 
 // Feature F5 : greedy nearest neighbour.
-
 // from where we are, go to the closest zone not visited yet, repeat.
 void buildRoute(struct CityGraph *g, struct Route *route, int start,
                 int need[], int totalNeed)
-                {
+{
     int visited[TOTAL_ZONES];
     for (int i = 0; i < TOTAL_ZONES; i++) visited[i] = 0;
     int current = start;
@@ -201,7 +200,6 @@ void displayRoute(struct CityGraph *g, struct Route *r)
 }
 
 // ================= PART B : C++ OOP PART =================
-
 // Feature F8 : simulated clock that can be moved forward
 class SimulatedClock
 {
@@ -224,6 +222,22 @@ public:
     void addOneHour() { advance(1); }
     void addThreeHours() { advance(3); }
     void reset() { day = 1;  hour = 8; }
+
+    // OPERATOR OVERLOADING
+    // lets us write  clk += 3  instead of  clk.advance(3)
+    SimulatedClock& operator += (int hours)
+    {
+        advance(hours);
+        return *this;
+    }
+
+    // gives the hours between two clock readings, so  now - earlier
+    // works like normal subtraction
+    int operator - (SimulatedClock &other)
+    {
+        return getTotalHours() - other.getTotalHours();
+    }
+
     const char* getPartOfDay()
     {
         if (hour >= 5 && hour <= 11) return "Morning";
@@ -239,8 +253,37 @@ public:
     }
 };
 
-// ================= MENU FUNCTIONS =================
+// owns one delivery route. the constructor sets it up and the
+// destructor frees the waypoints, so nobody has to remember to
+// call freeRoute by hand.
+class DeliveryRoute
+{
+private:
+    struct Route route;             // the C structure lives inside the class
+    struct CityGraph *city;
+public:
+    DeliveryRoute(struct CityGraph *g)
+    {
+        city = g;
+        initRoute(&route);
+    }
 
+    ~DeliveryRoute()
+    {
+        freeRoute(&route);
+    }
+
+    void build(int start, int need[], int howMany)
+    {
+        buildRoute(city, &route, start, need, howMany);
+    }
+
+    int getStops() { return route.stops; }
+    int getTotalKm() { return route.totalKm; }
+    void display() { displayRoute(city, &route); }
+};
+
+// ================= MENU FUNCTIONS =================
 // ask two zones and show the distance
 void distanceMenu(struct CityGraph *g)
 {
@@ -283,11 +326,24 @@ void routeMenu(struct CityGraph *g)
             return;
         }
     }
-    struct Route route;
-    initRoute(&route);
-    buildRoute(g, &route, start, need, howMany);
-    displayRoute(g, &route);
-    freeRoute(&route);
+    // work out what the trip would cost if we just visited the stops
+    // in the order they were typed, so the saving can be compared
+    int naive = 0;
+    int at = start;
+    for (int i = 0; i < howMany; i++)
+    {
+        naive = naive + g->dist[at][need[i]];
+        at = need[i];
+    }
+
+    DeliveryRoute route(g);
+    route.build(start, need, howMany);
+    route.display();        // destructor frees the waypoints on its own
+
+    cout << "\n  In the order you typed them : " << naive << " km" << endl;
+    cout << "  Greedy nearest neighbour    : " << route.getTotalKm() << " km" << endl;
+    cout << "  Saved                       : " << (naive - route.getTotalKm())
+         << " km" << endl;
 }
 
 // move the clock forward
@@ -310,61 +366,4 @@ void clockMenu(SimulatedClock *clk)
     cout << "\n  New time : ";  clk->display();  cout << endl;
 }
 
-// ================= STANDALONE DEMO =================
-void demoMember4()
-{
-    struct CityGraph city;
-    initGraph(&city);
-    SimulatedClock clk;
-    cout << "=========================================================" << endl;
-    cout << "   MEMBER 4 : CITY MAP, DELIVERY ROUTE AND CLOCK" << endl;
-    cout << "   Adjacency Matrix + Singly Linked List" << endl;
-    cout << "=========================================================" << endl;
-    cout << "\n1. The six city zones";
-    displayZones(&city);
-    cout << "\n2. The adjacency matrix";
-    displayMatrix(&city);
-    cout << "\n   diagonal is 0 (a zone is 0 km from itself)" << endl;
-    cout << "   table is a mirror, dist[1][3] = dist[3][1] = 8" << endl;
-    cout << "\n3. O(1) distance lookup" << endl;
-    cout << "  dist[1][3] = " << getDistance(&city, 1, 3) << " km" << endl;
-    cout << "  dist[0][5] = " << getDistance(&city, 0, 5) << " km" << endl;
-    cout << "  travel time 1 -> 5 = " << getTravelTime(&city, 1, 5) << " hrs" << endl;
-    cout << "\n4. Feature F5 : greedy nearest neighbour route" << endl;
-    int need[3] = { 5, 1, 4 };
-    cout << "\n  Van starts at " << city.zoneName[0] << endl;
-    cout << "  Must deliver to zones 5, 1 and 4" << endl;
-    int naive = city.dist[0][5] + city.dist[5][1] + city.dist[1][4];
-    cout << "\n  Visiting them in request order 5 -> 1 -> 4 = " << naive << " km" << endl;
-    struct Route route;
-    initRoute(&route);
-    buildRoute(&city, &route, 0, need, 3);
-    displayRoute(&city, &route);
-    cout << "\n  Greedy saved " << (naive - route.totalKm) << " km." << endl;
-    freeRoute(&route);
-    cout << "\n5. The simulated clock" << endl;
-    cout << "  start        : ";  clk.display();  cout << endl;
-    clk.addOneHour();
-    cout << "  after +1 hr  : ";  clk.display();  cout << endl;
-    clk.addThreeHours();
-    cout << "  after +3 hr  : ";  clk.display();  cout << endl;
-    cout << "\n6. Crossing midnight" << endl;
-    cout << "  before       : ";  clk.display();
-    cout << "   total = " << clk.getTotalHours() << " hrs" << endl;
-    clk.advance(13);
-    cout << "  after +13 hr : ";  clk.display();
-    cout << "   total = " << clk.getTotalHours() << " hrs" << endl;
-    cout << "\n  Hour wrapped back but total hours kept rising," << endl;
-    cout << "  so food age never comes out negative." << endl;
-    cout << "\n=========================================================" << endl;
-}
-
-#ifdef M4_STANDALONE
-
-int main()
-{
-    demoMember4();
-    return 0;
-}
-#endif
 #endif

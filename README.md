@@ -18,17 +18,7 @@ g++ -std=c++11 main.cpp -o frms.exe
 ./frms.exe
 ```
 
-Press **20** to load demo data, then **14** to run the priority matching.
-
-### Running one member's module on its own
-
-Every module also compiles and runs independently:
-
-```bash
-g++ -x c++ -std=c++11 -DM1_STANDALONE M1_UserDirectory.h -o m1.exe
-```
-
-Replace the number in both places for M2, M3 and M4.
+Press **23** to load demo data, then **17** to run the priority matching.
 
 ---
 
@@ -97,7 +87,7 @@ skipped F201 -> N502 (only -2.0 hrs usable after 4 hr trip)
 2.  F204 -> N503 | 30 meals | 0 km | P = 73.0
 ```
 
-The same biryani is **rejected** for one shelter (3-hour trip, arrives spoiled)
+The same biryani is **rejected** for one shelter (4-hour trip, arrives spoiled)
 and **ranked first** for another (same zone, 0 km).
 
 ---

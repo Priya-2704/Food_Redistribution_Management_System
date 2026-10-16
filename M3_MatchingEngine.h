@@ -17,7 +17,6 @@ using namespace std;
 #endif
 
 // ================= PART B : C++ OOP PART =================
-
 // one food request raised by an ngo
 class Request
 {
@@ -80,7 +79,7 @@ private:
 public:
     MatchPair(const char *fid, const char *nid, int m, int dist,
               float e, float w, float z)
-              {
+    {
         strcpy(foodId, fid);  strcpy(ngoId, nid);
         meals = m;  distance = dist;  E = e;  W = w;  Z = z;
         priority = 0.5 * E + 0.3 * W + 0.2 * Z;     // Feature F2
@@ -199,21 +198,6 @@ void freeMatchList(struct MatchList *l)
     l->size = 0;
 }
 
-// print the priority list
-void displayMatchList(struct MatchList *l)
-{
-    cout << "\n  ---- PRIORITY LIST (" << l->size << " pairs) ----" << endl;
-    if (l->size == 0) { cout << "  list is empty" << endl;  return; }
-    for (int i = 0; i < l->size; i++)
-    {
-        cout << "  index " << setw(2) << i << " : " << l->items[i]->getFoodId()
-             << " -> " << l->items[i]->getNgoId()
-             << "   P = " << l->items[i]->getPriority();
-        if (i == 0) cout << "   <-- best match";
-        cout << endl;
-    }
-}
-
 // ================= THE ENGINE CLASS =================
 // joins the queue and the priority list together
 class MatchingEngine
@@ -237,7 +221,7 @@ public:
     // build one pair and put it in the sorted list
     void addCandidate(const char *foodId, Request *r, int distance,
                       int mealsGiven, int currentHour)
-                      {
+    {
         MatchPair *m = new MatchPair(foodId, r->getNgoId(), mealsGiven, distance,
                                      r->getE(), r->getW(currentHour),
                                      getZoneScore(distance));
@@ -261,7 +245,6 @@ public:
 };
 
 // ================= MENU FUNCTIONS =================
-
 // take request details from the user
 void addRequestMenu(MatchingEngine *engine, int currentHour)
 {
@@ -296,85 +279,4 @@ void serveNextMenu(MatchingEngine *engine, int currentHour)
     delete r;
 }
 
-// ================= STANDALONE DEMO =================
-// distance table used only when this file is run on its own
-int demoDist[6][6] =
-{
-    {  0,  4,  7, 10,  6, 12 },
-    {  4,  0,  5,  8,  9, 14 },
-    {  7,  5,  0,  6, 11, 10 },
-    { 10,  8,  6,  0,  7,  9 },
-    {  6,  9, 11,  7,  0,  8 },
-    { 12, 14, 10,  9,  8,  0 }
-};
-
-void demoMember3()
-{
-    int currentHour = 18;
-    cout << fixed << setprecision(1);
-    cout << "=========================================================" << endl;
-    cout << "   MEMBER 3 : PRIORITY MATCHING ENGINE" << endl;
-    cout << "   Circular Queue + Sorted Array" << endl;
-    cout << "   Feature F2 : P = 0.5E + 0.3W + 0.2Z" << endl;
-    cout << "=========================================================" << endl;
-    MatchingEngine engine;
-    cout << "\n1. NGO requests arriving (circular queue)" << endl;
-    Request *r1 = new Request("R301", "N501", 60, 9, 15, 2);
-    Request *r2 = new Request("R302", "N502", 100, 6, 10, 5);
-    Request *r3 = new Request("R303", "N503", 40, 10, 17, 1);
-    engine.addRequest(r1);  engine.addRequest(r2);  engine.addRequest(r3);
-    displayQueue(engine.getQueue(), currentHour);
-    cout << "\n2. The E and W parts of each request" << endl;
-    cout << "\n  Request  Urgency      E   Waited      W" << endl;
-    Request *all[3] = { r1, r2, r3 };
-    for (int i = 0; i < 3; i++)
-        cout << "  " << all[i]->getReqId() << setw(9) << all[i]->getUrgency()
-             << setw(7) << all[i]->getE()
-             << setw(7) << (currentHour - all[i]->getArrivalHour())
-             << setw(7) << all[i]->getW(currentHour) << endl;
-    cout << "\n3. Building every food-NGO pair" << endl;
-    const char *foodId[3] = { "F201", "F203", "F205" };
-    int foodZone[3] = { 1, 4, 0 };
-    int foodMeals[3] = { 50, 100, 40 };
-    for (int i = 0; i < 3; i++)
-        for (int j = 0; j < 3; j++)
-            engine.addCandidate(foodId[i], all[j],
-                                demoDist[foodZone[i]][all[j]->getZone()],
-                                foodMeals[i], currentHour);
-    cout << "  " << engine.getMatchCount() << " candidate pairs created." << endl;
-    cout << "\n4. The list stays sorted after every insert";
-    displayMatchList(engine.getMatches());
-    cout << "\n5. The formula for the top 3 pairs" << endl;
-    struct MatchList *ml = engine.getMatches();
-    for (int i = 0; i < 3 && i < ml->size; i++) ml->items[i]->showFormula();
-    cout << "\n6. Taking matches out in priority order";
-    engine.runMatching();
-    cout << "\n7. Why priority order and not plain FIFO" << endl;
-    cout << "  FIFO would serve  : R301, R302, R303" << endl;
-    cout << "  Priority serves   : R303 first (urgency 10, same zone)" << endl;
-    cout << "  So an emergency does not wait behind an older normal request." << endl;
-    cout << "\n8. Circular queue wrap around" << endl;
-    struct RequestQueue *q = engine.getQueue();
-    cout << "  before : front = " << q->front << " rear = " << q->rear << endl;
-    delete dequeue(q);
-    delete dequeue(q);
-    cout << "  after 2 serves : front = " << q->front << " rear = " << q->rear << endl;
-    enqueue(q, new Request("R304", "N501", 25, 7, 18, 2));
-    cout << "  added R304 -> rear = " << q->rear << endl;
-    enqueue(q, new Request("R305", "N502", 35, 5, 18, 5));
-    cout << "  added R305 -> rear = " << q->rear << endl;
-    enqueue(q, new Request("R306", "N503", 20, 8, 18, 1));
-    cout << "  added R306 -> rear = " << q->rear << "  <-- back to the start" << endl;
-    displayQueue(q, currentHour);
-    cout << "\n=========================================================" << endl;
-}
-
-#ifdef M3_STANDALONE
-
-int main()
-{
-    demoMember3();
-    return 0;
-}
-#endif
 #endif

@@ -14,7 +14,6 @@ using namespace std;
 #define TOTAL_ZONES 6
 
 // ================= PART B : C++ OOP PART =================
-
 // base class
 class User
 {
@@ -249,7 +248,6 @@ void displayBuckets(struct UserDirectory *dir)
 }
 
 // ================= MENU FUNCTIONS =================
-
 // take donor details from the user
 void registerDonor(struct UserDirectory *dir)
 {
@@ -338,56 +336,4 @@ void loadDemoUsers(struct UserDirectory *dir)
     cout << "  Demo data loaded (4 donors, 3 NGOs)." << endl;
 }
 
-// ================= STANDALONE DEMO =================
-void demoMember1()
-{
-    struct UserDirectory dir;
-    initTable(&dir);
-    cout << fixed << setprecision(2);
-    cout << "=========================================================" << endl;
-    cout << "   MEMBER 1 : USER DIRECTORY AND TRUST RATING" << endl;
-    cout << "   Hash Table with Separate Chaining" << endl;
-    cout << "=========================================================" << endl;
-    cout << "\n1. Inserting users" << endl;
-    loadDemoUsers(&dir);
-    cout << "\n2. Displaying users (polymorphism)";
-    displayAll(&dir);
-    cout << "\n3. Bucket positions (see the collision)";
-    displayBuckets(&dir);
-    cout << "\n4. Searching" << endl;
-    const char *list[3] = { "D102", "N503", "D999" };
-    for (int i = 0; i < 3; i++)
-    {
-        cout << "  search " << list[i] << " -> bucket " << hashFunction(list[i]) << " -> ";
-        User *u = searchUser(&dir, list[i]);
-        cout << (u == NULL ? "not found" : u->getName()) << endl;
-    }
-    cout << "\n5. Trust rating of all donors" << endl;
-    const char *dlist[4] = { "D101", "D102", "D103", "D104" };
-    for (int i = 0; i < 4; i++)
-    {
-        Donor *d = (Donor *) searchUser(&dir, dlist[i]);
-        cout << "\n  " << d->getId() << " " << d->getName() << endl;
-        d->getTrust().showScore();
-    }
-    cout << "\n6. D104 completes one more donation" << endl;
-    Donor *d104 = (Donor *) searchUser(&dir, "D104");
-    cout << "  Score before : " << d104->getTrust().getScore() << endl;
-    d104->getTrust().addPledge(1, 95);
-    cout << "  Score after  : " << d104->getTrust().getScore() << endl;
-    cout << "\n7. Deleting D103 (unlink from its chain)" << endl;
-    deleteUser(&dir, "D103");
-    cout << "  Users left : " << dir.count << endl;
-    freeTable(&dir);
-    cout << "\n=========================================================" << endl;
-}
-
-#ifdef M1_STANDALONE
-
-int main()
-{
-    demoMember1();
-    return 0;
-}
-#endif
 #endif

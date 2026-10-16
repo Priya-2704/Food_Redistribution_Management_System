@@ -12,7 +12,6 @@
 using namespace std;
 
 // ================= PART B : C++ OOP PART =================
-
 // abstract class, cannot make an object of it
 class FoodItem
 {
@@ -27,7 +26,7 @@ protected:
 public:
     FoodItem(const char *fid, const char *fname, const char *did,
              int qty, int prep, int life, int z)
-             {
+    {
         strcpy(id, fid);  strcpy(name, fname);  strcpy(donorId, did);
         quantity = qty;  preparedHour = prep;  shelfLife = life;  zone = z;
     }
@@ -275,7 +274,6 @@ int removeExpired(struct ActiveFoodList *list, int currentHour)
 }
 
 // ================= MENU FUNCTIONS =================
-
 // take food details from the user
 void addFoodMenu(struct ActiveFoodList *list, int currentHour)
 {
@@ -346,53 +344,4 @@ void loadDemoFood(struct ActiveFoodList *list, int currentHour)
     cout << "  Demo food loaded (3 cooked, 2 packaged)." << endl;
 }
 
-// ================= STANDALONE DEMO =================
-void demoMember2()
-{
-    struct ActiveFoodList list;
-    initList(&list);
-    int currentHour = 18;
-    cout << fixed << setprecision(1);
-    cout << "=========================================================" << endl;
-    cout << "   MEMBER 2 : FOOD INVENTORY, HYGIENE AND DECAY" << endl;
-    cout << "   Doubly Linked List   |   Time = " << currentHour << ":00" << endl;
-    cout << "=========================================================" << endl;
-    cout << "\n1. Adding food to the list" << endl;
-    loadDemoFood(&list, currentHour);
-    cout << "\n2. Showing the inventory";
-    displayFoodList(&list, currentHour);
-    cout << "\n3. Printing backwards using the prev pointers";
-    displayReverse(&list);
-    cout << "\n4. Different decay rates (polymorphism)" << endl;
-    struct FoodNode *p = list.head;
-    while (p != NULL)
-    {
-        cout << "  " << setw(16) << left << p->food->getName()
-             << setw(11) << p->food->getType() << p->food->getDecayRate() << endl;
-        p = p->next;
-    }
-    cout << right;
-    cout << "\n5. Feature F1 : usable shelf life after travel";
-    showUsableLife(&list, currentHour, 3);
-    cout << "\n6. Feature F4 : hygiene risk tiers";
-    showRiskTiers(&list, currentHour);
-    cout << "\n7. Deleting one item by ID (O(1) unlink)" << endl;
-    removeNode(&list, findFood(&list, "F203"));
-    cout << "  Items left : " << list.count << endl;
-    cout << "\n8. Clock moves to 20:00, clearing expired food" << endl;
-    currentHour = 20;
-    cout << "  Total removed : " << removeExpired(&list, currentHour) << endl;
-    displayFoodList(&list, currentHour);
-    freeList(&list);
-    cout << "\n=========================================================" << endl;
-}
-
-#ifdef M2_STANDALONE
-
-int main()
-{
-    demoMember2();
-    return 0;
-}
-#endif
 #endif
