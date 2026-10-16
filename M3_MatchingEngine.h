@@ -225,7 +225,8 @@ public:
         MatchPair *m = new MatchPair(foodId, r->getNgoId(), mealsGiven, distance,
                                      r->getE(), r->getW(currentHour),
                                      getZoneScore(distance));
-        insertSorted(&matches, m);
+        if (insertSorted(&matches, m) == 0)
+            delete m;               // list was full, do not leak it
     }
     // take out matches one by one, best first
     void runMatching()

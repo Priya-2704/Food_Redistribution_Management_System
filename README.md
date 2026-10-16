@@ -71,10 +71,9 @@ One clock hour is not one hour of shelf life:
 Menu option **14** is where all four members' work runs on the same data:
 
 ```
-Member 4  gives the distance and travel time between zones
-Member 2  checks whether the food survives that journey   (Feature F1)
-Member 3  scores and ranks whatever survives              (Feature F2)
-Member 1  owns the donors and NGOs being matched
+the city graph  gives the distance and travel time between zones
+the inventory   checks whether the food survives that journey   (Feature F1)
+the engine      scores and ranks whatever survives              (Feature F2)
 ```
 
 Sample output:
