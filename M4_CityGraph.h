@@ -224,7 +224,7 @@ public:
     void reset() { day = 1;  hour = 8; }
 
     // OPERATOR OVERLOADING
-    // lets us write  clk += 3  instead of  clk.advance(3)
+    // clk += 3  instead of  clk.advance(3)
     SimulatedClock& operator += (int hours)
     {
         advance(hours);

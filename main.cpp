@@ -1,6 +1,6 @@
 // main.cpp
 // FOOD REDISTRIBUTION MANAGEMENT SYSTEM (FRMS)
-// Joins the work of all four members into one menu.
+// Joins the work of all into one menu.
 // Compile :  g++ -std=c++11 main.cpp -o frms.exe
 #include "M1_UserDirectory.h"
 #include "M2_FoodInventory.h"
@@ -26,10 +26,8 @@ int readChoice()
 // print the menu grouped by member
 void showMenu(SimulatedClock *clk)
 {
-    cout << "\n=========================================================" << endl;
     cout << "   FOOD REDISTRIBUTION MANAGEMENT SYSTEM" << endl;
     cout << "   Time : ";  clk->display();  cout << endl;
-    cout << "=========================================================" << endl;
     cout << "\n  -- User Directory --" << endl;
     cout << "   1. Register Donor            5. Donor Trust Rating" << endl;
     cout << "   2. Register NGO / Shelter    6. Show Hash Table Buckets" << endl;
@@ -64,7 +62,6 @@ void loadAllDemoData(struct UserDirectory *dir, struct ActiveFoodList *food,
     cout << "  3 NGO requests added to the queue." << endl;
 }
 
-// all four members work together here :
 // the city graph gives the distance, the inventory checks the food
 // survives the trip, the engine scores and ranks whatever is left
 void runFullMatching(struct ActiveFoodList *food, MatchingEngine *engine,
@@ -137,17 +134,28 @@ int main()
         int now = clk.getTotalHours();      // re-read so the clock takes effect
         switch (choice)
         {
-            case 1:  registerDonor(&dir);                       break;
-            case 2:  registerRecipient(&dir);                   break;
-            case 3:  findUserMenu(&dir);                        break;
-            case 4:  displayAll(&dir);                          break;
-            case 5:  trustRatingMenu(&dir);                     break;
-            case 6:  displayBuckets(&dir);                      break;
-            case 7:  deleteUserMenu(&dir);                      break;
-            case 8:  addFoodMenu(&food, now);                   break;
-            case 9:  displayFoodList(&food, now);               break;
-            case 10: displayReverse(&food);                     break;
-            case 11: checkFoodMenu(&food, now);                 break;
+            case 1:  registerDonor(&dir); 
+                     break;
+            case 2:  registerRecipient(&dir);  
+                     break;
+            case 3:  findUserMenu(&dir); 
+                     break;
+            case 4:  displayAll(&dir);                         
+                     break;
+            case 5:  trustRatingMenu(&dir);                     
+                     break;
+            case 6:  displayBuckets(&dir);                      
+                     break;
+            case 7:  deleteUserMenu(&dir);                      
+                     break;
+            case 8:  addFoodMenu(&food, now);                   
+                     break;
+            case 9:  displayFoodList(&food, now);               
+                     break;
+            case 10: displayReverse(&food);                     
+                     break;
+            case 11: checkFoodMenu(&food, now);                 
+                     break;
             case 12:
             {
                 int travel;
@@ -156,7 +164,8 @@ int main()
                 showUsableLife(&food, now, travel);
                 break;
             }
-            case 13: showRiskTiers(&food, now);                 break;
+            case 13: showRiskTiers(&food, now);                 
+                 break;
             case 14:
                 cout << "\n  --- REMOVING EXPIRED FOOD ---" << endl;
                 cout << "  " << removeExpired(&food, now) << " item(s) removed." << endl;
