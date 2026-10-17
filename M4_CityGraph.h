@@ -350,6 +350,7 @@ void routeMenu(struct CityGraph *g)
 void clockMenu(SimulatedClock *clk)
 {
     int choice;
+    SimulatedClock before = *clk;       // keep a copy to subtract from later
     cout << "\n  --- SIMULATED CLOCK ---" << endl;
     cout << "  Now : ";  clk->display();  cout << endl;
     cout << "\n  1. Forward 1 hour" << endl;
@@ -358,12 +359,15 @@ void clockMenu(SimulatedClock *clk)
     cout << "  4. Reset to Day 1, 08:00" << endl;
     cout << "  Choice : ";
     cin >> choice;
-    if (choice == 1) clk->addOneHour();
-    else if (choice == 2) clk->addThreeHours();
-    else if (choice == 3) { int h;  cout << "  Hours : ";  cin >> h;  clk->advance(h); }
+    // *clk += n  uses our overloaded += operator
+    if (choice == 1) *clk += 1;
+    else if (choice == 2) *clk += 3;
+    else if (choice == 3) { int h;  cout << "  Hours : ";  cin >> h;  *clk += h; }
     else if (choice == 4) clk->reset();
     else { cout << "  Wrong choice." << endl;  return; }
     cout << "\n  New time : ";  clk->display();  cout << endl;
+    // *clk - before  uses our overloaded - operator
+    cout << "  Moved forward by : " << (*clk - before) << " hrs" << endl;
 }
 
 #endif
