@@ -34,18 +34,17 @@ void showMenu(SimulatedClock *clk)
     cout << "   3. Search User by ID         7. Delete a User" << endl;
     cout << "   4. Display All Users" << endl;
     cout << "\n  -- Food Inventory --" << endl;
-    cout << "   8. Add Food Donation        12. Check All Food vs Travel" << endl;
-    cout << "   9. Show Active Inventory    13. Show Hygiene Risk Tiers" << endl;
-    cout << "  10. Show Inventory Reversed  14. Remove Expired Food" << endl;
-    cout << "  11. Check One Food Item" << endl;
+    cout << "   8. Add Food Donation        11. Check All Food vs Travel" << endl;
+    cout << "   9. Show Active Inventory    12. Show Hygiene Risk Tiers" << endl;
+    cout << "  10. Check One Food Item      13. Remove Expired Food" << endl;
     cout << "\n  -- Matching Engine --" << endl;
-    cout << "  15. Raise NGO Request        17. RUN PRIORITY MATCHING" << endl;
-    cout << "  16. Show Request Queue       18. Serve Next Request (FIFO)" << endl;
+    cout << "  14. Raise NGO Request        16. RUN PRIORITY MATCHING" << endl;
+    cout << "  15. Show Request Queue       17. Serve Next Request (FIFO)" << endl;
     cout << "\n  -- City Map, Route and Clock --" << endl;
-    cout << "  19. Show City Zone Map       21. Build Delivery Route" << endl;
-    cout << "  20. Distance Between Zones   22. Move Clock Forward" << endl;
+    cout << "  18. Show City Zone Map       20. Build Delivery Route" << endl;
+    cout << "  19. Distance Between Zones   21. Move Clock Forward" << endl;
     cout << "\n  -- System --" << endl;
-    cout << "  23. Load Demo Data            0. Exit" << endl;
+    cout << "  22. Load Demo Data            0. Exit" << endl;
     cout << "\n  Enter choice : ";
 }
 
@@ -125,7 +124,7 @@ int main()
     initList(&food);
     initGraph(&city);
     cout << fixed << setprecision(1);
-    cout << "\n  Welcome. Press 23 to load demo data first." << endl;
+    cout << "\n  Welcome. Press 22 to load demo data first." << endl;
     int choice;
     do
     {
@@ -152,11 +151,9 @@ int main()
                      break;
             case 9:  displayFoodList(&food, now);               
                      break;
-            case 10: displayReverse(&food);                     
+            case 10: checkFoodMenu(&food, now);
                      break;
-            case 11: checkFoodMenu(&food, now);                 
-                     break;
-            case 12:
+            case 11:
             {
                 int travel;
                 cout << "\n  Travel hours to the NGO : ";
@@ -164,21 +161,21 @@ int main()
                 showUsableLife(&food, now, travel);
                 break;
             }
-            case 13: showRiskTiers(&food, now);                 
+            case 12: showRiskTiers(&food, now);
                  break;
-            case 14:
+            case 13:
                 cout << "\n  --- REMOVING EXPIRED FOOD ---" << endl;
                 cout << "  " << removeExpired(&food, now) << " item(s) removed." << endl;
                 break;
-            case 15: addRequestMenu(&engine, now);              break;
-            case 16: displayQueue(engine.getQueue(), now);      break;
-            case 17: runFullMatching(&food, &engine, &city, now); break;
-            case 18: serveNextMenu(&engine, now);               break;
-            case 19: displayZones(&city);  displayMatrix(&city); break;
-            case 20: distanceMenu(&city);                       break;
-            case 21: routeMenu(&city);                          break;
-            case 22: clockMenu(&clk);                           break;
-            case 23: loadAllDemoData(&dir, &food, &engine, now); break;
+            case 14: addRequestMenu(&engine, now);              break;
+            case 15: displayQueue(engine.getQueue(), now);      break;
+            case 16: runFullMatching(&food, &engine, &city, now); break;
+            case 17: serveNextMenu(&engine, now);               break;
+            case 18: displayZones(&city);  displayMatrix(&city); break;
+            case 19: distanceMenu(&city);                       break;
+            case 20: routeMenu(&city);                          break;
+            case 21: clockMenu(&clk);                           break;
+            case 22: loadAllDemoData(&dir, &food, &engine, now); break;
             case 0:  cout << "\n  Closing the system..." << endl; break;
             default: cout << "\n  Wrong choice, please try again." << endl; break;
         }

@@ -12,7 +12,7 @@ g++ -std=c++11 main.cpp -o frms.exe
 ./frms.exe
 ```
 
-Press 23 to load the sample data, then 17 to run the matching.
+Press 22 to load the sample data, then 16 to run the matching.
 
 ## Files
 

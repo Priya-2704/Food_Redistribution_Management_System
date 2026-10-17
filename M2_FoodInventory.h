@@ -200,18 +200,6 @@ void displayFoodList(struct ActiveFoodList *list, int currentHour)
     while (p != NULL) { p->food->display(currentHour);  p = p->next; }
 }
 
-// print tail to head, a singly linked list cannot do this
-void displayReverse(struct ActiveFoodList *list)
-{
-    cout << "\n  ---- SAME LIST IN REVERSE ----" << endl;
-    struct FoodNode *p = list->tail;
-    while (p != NULL)
-    {
-        cout << "  " << p->food->getId() << " " << p->food->getName() << endl;
-        p = p->prev;
-    }
-}
-
 // Feature F4 : group the inventory into risk tiers
 void showRiskTiers(struct ActiveFoodList *list, int currentHour)
 {
