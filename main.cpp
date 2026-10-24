@@ -23,7 +23,6 @@ int readChoice()
     return choice;
 }
 
-// print the menu grouped by member
 void showMenu(SimulatedClock *clk)
 {
     cout << "   FOOD REDISTRIBUTION MANAGEMENT SYSTEM" << endl;
@@ -48,7 +47,6 @@ void showMenu(SimulatedClock *clk)
     cout << "\n  Enter choice : ";
 }
 
-// fill the system with sample data in one keypress
 void loadAllDemoData(struct UserDirectory *dir, struct ActiveFoodList *food,
                      MatchingEngine *engine, int nowHours)
 {
@@ -101,7 +99,6 @@ void runFullMatching(struct ActiveFoodList *food, MatchingEngine *engine,
     engine->runMatching();
 }
 
-// ask for an id and remove that user from the hash table
 void deleteUserMenu(struct UserDirectory *dir)
 {
     char id[20];

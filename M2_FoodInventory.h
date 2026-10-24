@@ -2,7 +2,6 @@
 // Member 2 - Food Inventory, Hygiene and Decay
 // Data Structure : Doubly Linked List (ActiveFoodList)
 // Feature F1 : Usable Shelf Life     Feature F4 : Risk Hygiene Tier
-// Run alone :  g++ -x c++ -DM2_STANDALONE M2_FoodInventory.h -o m2.exe
 #ifndef M2_FOODINVENTORY_H
 #define M2_FOODINVENTORY_H
 #include <iostream>
@@ -41,7 +40,6 @@ public:
     virtual float getDecayRate() = 0;
     virtual const char* getType() = 0;
     virtual void display(int currentHour) = 0;
-    // hours of life left right now
     float getRemainingLife(int currentHour)
     {
         int age = currentHour - preparedHour;
@@ -76,7 +74,6 @@ public:
     }
 };
 
-// derived class 1, food cooked in a kitchen
 class CookedFood : public FoodItem
 {
 private:
@@ -97,7 +94,6 @@ public:
     }
 };
 
-// derived class 2, sealed or packet food
 class PackagedFood : public FoodItem
 {
 private:
@@ -134,13 +130,11 @@ struct ActiveFoodList
     int count;
 };
 
-// make the list empty
 void initList(struct ActiveFoodList *list)
 {
     list->head = NULL;  list->tail = NULL;  list->count = 0;
 }
 
-// add at the end of the list
 void addFood(struct ActiveFoodList *list, FoodItem *f)
 {
     struct FoodNode *newNode = (struct FoodNode *) malloc(sizeof(struct FoodNode));
@@ -165,7 +159,6 @@ void removeNode(struct ActiveFoodList *list, struct FoodNode *p)
     list->count--;
 }
 
-// search the list by food id
 struct FoodNode* findFood(struct ActiveFoodList *list, const char *id)
 {
     struct FoodNode *p = list->head;
@@ -177,7 +170,6 @@ struct FoodNode* findFood(struct ActiveFoodList *list, const char *id)
     return NULL;
 }
 
-// free every node and every object
 void freeList(struct ActiveFoodList *list)
 {
     struct FoodNode *p = list->head;
@@ -241,7 +233,6 @@ void showUsableLife(struct ActiveFoodList *list, int currentHour, int travelHour
     }
 }
 
-// delete every item whose life is over
 int removeExpired(struct ActiveFoodList *list, int currentHour)
 {
     struct FoodNode *p = list->head;
@@ -262,7 +253,6 @@ int removeExpired(struct ActiveFoodList *list, int currentHour)
 }
 
 // ================= MENU FUNCTIONS =================
-// take food details from the user
 void addFoodMenu(struct ActiveFoodList *list, int currentHour)
 {
     char id[20], name[40], donorId[20];
@@ -300,7 +290,6 @@ void addFoodMenu(struct ActiveFoodList *list, int currentHour)
     cout << "\n  Food added to inventory." << endl;
 }
 
-// full report of one food item
 void checkFoodMenu(struct ActiveFoodList *list, int currentHour)
 {
     char id[20];

@@ -2,7 +2,6 @@
 // Member 4 - City Zone Map, Delivery Route and Simulated Clock
 // Data Structures : Graph Adjacency Matrix + Singly Linked List (waypoints)
 // Feature F5 : Multi Stop Route      Feature F8 : Simulated Clock
-// Run alone :  g++ -x c++ -DM4_STANDALONE M4_CityGraph.h -o m4.exe
 #ifndef M4_CITYGRAPH_H
 #define M4_CITYGRAPH_H
 #include <iostream>
@@ -23,7 +22,6 @@ struct CityGraph
     char zoneName[TOTAL_ZONES][25];
 };
 
-// fill the zone names and the distance table
 void initGraph(struct CityGraph *g)
 {
     strcpy(g->zoneName[0], "Clement Town");
@@ -55,7 +53,6 @@ int getDistance(struct CityGraph *g, int from, int to)
 
 char* getZoneName(struct CityGraph *g, int zone) { return g->zoneName[zone]; }
 
-// change km into travel hours
 int getTravelTime(struct CityGraph *g, int from, int to)
 {
     int km = getDistance(g, from, to);
@@ -86,7 +83,6 @@ void displayZones(struct CityGraph *g)
         cout << "  Zone " << i << " : " << g->zoneName[i] << endl;
 }
 
-// print the whole 2d table
 void displayMatrix(struct CityGraph *g)
 {
     cout << "\n  ---- DISTANCE MATRIX (km) ----" << endl;
@@ -118,7 +114,6 @@ struct Route
 
 void initRoute(struct Route *r) { r->head = NULL;  r->stops = 0;  r->totalKm = 0; }
 
-// add one stop at the end of the route
 void addWaypoint(struct Route *r, int zone, int dist)
 {
     struct Waypoint *w = (struct Waypoint *) malloc(sizeof(struct Waypoint));
@@ -180,7 +175,6 @@ void buildRoute(struct CityGraph *g, struct Route *route, int start,
     }
 }
 
-// walk the linked list and print the itinerary
 void displayRoute(struct CityGraph *g, struct Route *r)
 {
     cout << "\n  ---- DELIVERY ROUTE (" << r->stops << " stops) ----" << endl;
@@ -284,7 +278,6 @@ public:
 };
 
 // ================= MENU FUNCTIONS =================
-// ask two zones and show the distance
 void distanceMenu(struct CityGraph *g)
 {
     int a, b;
@@ -302,7 +295,6 @@ void distanceMenu(struct CityGraph *g)
          << " (" << g->dist[a][near] << " km)" << endl;
 }
 
-// ask the stops and build the greedy route
 void routeMenu(struct CityGraph *g)
 {
     int start, howMany;
@@ -346,7 +338,6 @@ void routeMenu(struct CityGraph *g)
          << " km" << endl;
 }
 
-// move the clock forward
 void clockMenu(SimulatedClock *clk)
 {
     int choice;

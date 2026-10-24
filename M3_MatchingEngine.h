@@ -2,7 +2,6 @@
 // Member 3 - Priority Matching Engine
 // Data Structures : Circular Queue (ngo requests) + Sorted Array (priority list)
 // Feature F2 : Priority Score  P = 0.5E + 0.3W + 0.2Z
-// Run alone :  g++ -x c++ -DM3_STANDALONE M3_MatchingEngine.h -o m3.exe
 #ifndef M3_MATCHINGENGINE_H
 #define M3_MATCHINGENGINE_H
 #include <iostream>
@@ -17,7 +16,6 @@ using namespace std;
 #endif
 
 // ================= PART B : C++ OOP PART =================
-// one food request raised by an ngo
 class Request
 {
 private:
@@ -66,7 +64,6 @@ float getZoneScore(int distance)
     return z;
 }
 
-// one food to ngo pairing with its priority score
 class MatchPair
 {
 private:
@@ -133,7 +130,6 @@ int enqueue(struct RequestQueue *q, Request *r)
     return 1;
 }
 
-// remove from the front
 Request* dequeue(struct RequestQueue *q)
 {
     if (isQueueEmpty(q) == 1) return NULL;
@@ -218,7 +214,6 @@ public:
     int getMatchCount() { return matches.size; }
     // returns 0 if the queue was full, so the caller can clean up
     int addRequest(Request *r) { return enqueue(&queue, r); }
-    // build one pair and put it in the sorted list
     void addCandidate(const char *foodId, Request *r, int distance,
                       int mealsGiven, int currentHour)
     {
@@ -228,7 +223,6 @@ public:
         if (insertSorted(&matches, m) == 0)
             delete m;               // list was full, do not leak it
     }
-    // take out matches one by one, best first
     void runMatching()
     {
         cout << "\n  ---- MATCHING RESULT (highest priority first) ----" << endl;
@@ -246,7 +240,6 @@ public:
 };
 
 // ================= MENU FUNCTIONS =================
-// take request details from the user
 void addRequestMenu(MatchingEngine *engine, int currentHour)
 {
     char reqId[20], ngoId[20];
@@ -269,7 +262,6 @@ void addRequestMenu(MatchingEngine *engine, int currentHour)
         delete r;                   // queue was full, do not leak it
 }
 
-// serve the front request in fifo order
 void serveNextMenu(MatchingEngine *engine, int currentHour)
 {
     cout << "\n  --- SERVE NEXT REQUEST (FIFO) ---" << endl;

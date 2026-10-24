@@ -2,7 +2,6 @@
 // Member 1 - User Directory and Donor Trust Rating
 // Data Structure : Hash Table with Separate Chaining
 // Feature S4 : Trust Score  S = 0.6F + 0.4Q
-// Run alone :  g++ -x c++ -DM1_STANDALONE M1_UserDirectory.h -o m1.exe
 #ifndef M1_USERDIRECTORY_H
 #define M1_USERDIRECTORY_H
 #include <iostream>
@@ -14,7 +13,6 @@ using namespace std;
 #define TOTAL_ZONES 6
 
 // ================= PART B : C++ OOP PART =================
-// base class
 class User
 {
 protected:
@@ -35,7 +33,6 @@ public:
     virtual char getTag() { return 'U'; }
 };
 
-// trust history of one donor
 class DonorTrustProfile
 {
 private:
@@ -57,14 +54,12 @@ public:
     // S = 0.6F + 0.4Q
     float getScore() { return 0.6 * getF() + 0.4 * quality; }
     int isApproved() { return (getScore() >= 75) ? 1 : 0; }
-    // update after one more donation
     void addPledge(int done, float q)
     {
         quality = (quality * pledged + q) / (pledged + 1);
         pledged++;
         if (done == 1) fulfilled++;
     }
-    // print the formula
     void showScore()
     {
         cout << "    Pledges : " << fulfilled << " out of " << pledged << endl;
@@ -74,7 +69,6 @@ public:
     }
 };
 
-// derived class 1
 class Donor : public User
 {
 private:
@@ -100,7 +94,6 @@ public:
     char getTag() { return 'D'; }
 };
 
-// derived class 2
 class Recipient : public User
 {
 private:
@@ -142,7 +135,6 @@ int hashFunction(const char *key)
     return sum % TABLE_SIZE;
 }
 
-// make all buckets empty
 void initTable(struct UserDirectory *dir)
 {
     for (int i = 0; i < TABLE_SIZE; i++) dir->bucket[i] = NULL;
@@ -175,7 +167,6 @@ int insertUser(struct UserDirectory *dir, const char *id, User *u)
     return 1;
 }
 
-// unlink one node from its chain
 int deleteUser(struct UserDirectory *dir, const char *id)
 {
     int index = hashFunction(id);
@@ -198,7 +189,6 @@ int deleteUser(struct UserDirectory *dir, const char *id)
     return 0;
 }
 
-// free every node and every object
 void freeTable(struct UserDirectory *dir)
 {
     for (int i = 0; i < TABLE_SIZE; i++)
@@ -228,7 +218,6 @@ void displayAll(struct UserDirectory *dir)
     }
 }
 
-// shows which id went into which bucket
 void displayBuckets(struct UserDirectory *dir)
 {
     cout << "\n  ---- HASH TABLE (size " << TABLE_SIZE << ") ----" << endl;
@@ -248,7 +237,6 @@ void displayBuckets(struct UserDirectory *dir)
 }
 
 // ================= MENU FUNCTIONS =================
-// take donor details from the user
 void registerDonor(struct UserDirectory *dir)
 {
     char id[20], name[50];
@@ -276,7 +264,6 @@ void registerDonor(struct UserDirectory *dir)
     d->getTrust().showScore();
 }
 
-// take ngo details from the user
 void registerRecipient(struct UserDirectory *dir)
 {
     char id[20], name[50];
@@ -298,7 +285,6 @@ void registerRecipient(struct UserDirectory *dir)
     cout << "\n  Recipient registered." << endl;
 }
 
-// search and show one user
 void findUserMenu(struct UserDirectory *dir)
 {
     char id[20];
@@ -310,7 +296,6 @@ void findUserMenu(struct UserDirectory *dir)
     else u->display();
 }
 
-// show trust score of one donor
 void trustRatingMenu(struct UserDirectory *dir)
 {
     char id[20];
@@ -323,7 +308,6 @@ void trustRatingMenu(struct UserDirectory *dir)
     d->getTrust().showScore();
 }
 
-// sample data for testing
 void loadDemoUsers(struct UserDirectory *dir)
 {
     insertUser(dir, "D101", new Donor("D101", "Hotel Sunrise", 1, 1, 10, 9, 88));
