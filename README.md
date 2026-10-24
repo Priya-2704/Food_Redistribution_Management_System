@@ -1,8 +1,6 @@
 # Food Redistribution Management System (FRMS)
 
 A C++ console project for Data Structures in C and OOP with C++.
-Graphic Era Hill University.
-
 ## What the project is about
 
 Restaurants, hostel messes and caterers throw away a lot of food that is
@@ -51,10 +49,6 @@ M3_MatchingEngine.h   circular queue, sorted array, priority score
 M4_CityGraph.h        adjacency matrix, delivery route, clock
 main.cpp              menu
 ```
-
-Each file has a C part with structs and functions, and a C++ part with
-classes. No STL containers are used anywhere.
-
 ## What is working
 
 - Donors and NGOs can be registered, searched and deleted
@@ -78,6 +72,3 @@ classes. No STL containers are used anywhere.
 - Saving to a file, so the data is still there after closing the program
 - The priority list should be made faster using a heap
 
-## Built with
-
-MinGW g++ 6.3.0 on Windows. No libraries.
